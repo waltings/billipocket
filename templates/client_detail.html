@@ -1,0 +1,226 @@
+{% extends 'layout.html' %}
+{% block title %}{{ client.name }} – Klient – Billipocket{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+<section id="client-detail" class="mb-4">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">{{ client.name }}</h1>
+      <p class="text-muted mb-0">Kliendi andmed ja arveajalugu</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('invoices.new_invoice') }}?client_id={{ client.id }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Uus arve
+      </a>
+      <a href="{{ url_for('clients.edit_client', client_id=client.id) }}" class="btn btn-outline-secondary">
+        <i class="bi bi-pencil me-1"></i>Muuda
+      </a>
+      <a href="{{ url_for('clients.clients') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Tagasi
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Client Information -->
+    <div class="col-lg-4">
+      <div class="bp-card mb-4">
+        <div class="bp-card-header">
+          <h2 class="h6 m-0">
+            <i class="bi bi-person me-2"></i>Kliendi andmed
+          </h2>
+        </div>
+        <div class="bp-card-body">
+          <table class="table table-borderless mb-0">
+            <tbody>
+              <tr>
+                <td class="text-muted">Nimi:</td>
+                <td class="fw-medium">{{ client.name }}</td>
+              </tr>
+              {% if client.registry_code %}
+              <tr>
+                <td class="text-muted">Registrikood:</td>
+                <td>{{ client.registry_code }}</td>
+              </tr>
+              {% endif %}
+              {% if client.email %}
+              <tr>
+                <td class="text-muted">E-post:</td>
+                <td>
+                  <a href="mailto:{{ client.email }}" class="text-decoration-none">
+                    <i class="bi bi-envelope me-1"></i>{{ client.email }}
+                  </a>
+                </td>
+              </tr>
+              {% endif %}
+              {% if client.phone %}
+              <tr>
+                <td class="text-muted">Telefon:</td>
+                <td>
+                  <a href="tel:{{ client.phone }}" class="text-decoration-none">
+                    <i class="bi bi-telephone me-1"></i>{{ client.phone }}
+                  </a>
+                </td>
+              </tr>
+              {% endif %}
+              {% if client.address %}
+              <tr>
+                <td class="text-muted">Aadress:</td>
+                <td>{{ client.address | replace('\n', '<br>') | safe }}</td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="bp-card">
+        <div class="bp-card-header">
+          <h3 class="h6 m-0">
+            <i class="bi bi-graph-up me-2"></i>Statistika
+          </h3>
+        </div>
+        <div class="bp-card-body">
+          <div class="row text-center">
+            <div class="col-6 border-end">
+              <div class="h4 mb-1 text-primary">{{ client.invoice_count }}</div>
+              <div class="small text-muted">Arveid</div>
+            </div>
+            <div class="col-6">
+              <div class="h4 mb-1 text-success">{{ "%.2f"|format(client.total_revenue) }}€</div>
+              <div class="small text-muted">Kogutulu</div>
+            </div>
+          </div>
+          
+          {% if client.last_invoice_date %}
+          <div class="text-center mt-3 pt-3 border-top">
+            <div class="small text-muted">Viimane arve</div>
+            <div class="fw-medium">{{ client.last_invoice_date.strftime('%d.%m.%Y') }}</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoices List -->
+    <div class="col-lg-8">
+      <div class="bp-card">
+        <div class="bp-card-header d-flex justify-content-between align-items-center">
+          <h3 class="h6 m-0">
+            <i class="bi bi-file-earmark-text me-2"></i>Arved ({{ invoices|length }})
+          </h3>
+          <a href="{{ url_for('invoices.new_invoice') }}?client_id={{ client.id }}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-plus-lg me-1"></i>Lisa arve
+          </a>
+        </div>
+        <div class="bp-card-body p-0">
+          {% if invoices %}
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="border-0">Arve nr</th>
+                  <th class="border-0">Kuupäev</th>
+                  <th class="border-0">Tähtaeg</th>
+                  <th class="border-0">Staatus</th>
+                  <th class="border-0 text-end">Summa</th>
+                  <th class="border-0 text-end">Toimingud</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for invoice in invoices %}
+                <tr>
+                  <td>
+                    <a href="{{ url_for('invoices.view_invoice', invoice_id=invoice.id) }}" 
+                       class="text-decoration-none fw-medium">
+                      {{ invoice.number }}
+                    </a>
+                  </td>
+                  <td>{{ invoice.date.strftime('%d.%m.%Y') }}</td>
+                  <td>
+                    <span class="{% if invoice.is_overdue %}text-danger{% endif %}">
+                      {{ invoice.due_date.strftime('%d.%m.%Y') }}
+                    </span>
+                  </td>
+                  <td>
+                    {% if invoice.status == 'mustand' %}
+                    <span class="badge bg-secondary">Mustand</span>
+                    {% elif invoice.status == 'saadetud' %}
+                    <span class="badge bg-warning text-dark">Saadetud</span>
+                    {% elif invoice.status == 'makstud' %}
+                    <span class="badge bg-success">Makstud</span>
+                    {% elif invoice.status == 'tähtaeg ületatud' %}
+                    <span class="badge bg-danger">Tähtaeg ületatud</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-end">
+                    <span class="fw-medium">{{ "%.2f"|format(invoice.total) }}€</span>
+                  </td>
+                  <td class="text-end">
+                    <div class="btn-group btn-group-sm" role="group">
+                      <a href="{{ url_for('invoices.view_invoice', invoice_id=invoice.id) }}" 
+                         class="btn btn-outline-primary" 
+                         title="Vaata arvet">
+                        <i class="bi bi-eye"></i>
+                      </a>
+                      {% if invoice.status != 'makstud' %}
+                      <a href="{{ url_for('invoices.edit_invoice', invoice_id=invoice.id) }}" 
+                         class="btn btn-outline-secondary" 
+                         title="Muuda arvet">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      {% endif %}
+                      <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='standard') }}" 
+                         class="btn btn-outline-info" 
+                         target="_blank"
+                         title="PDF">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-5">
+            <div class="mb-3">
+              <i class="bi bi-file-earmark-text display-1 text-muted"></i>
+            </div>
+            <h5 class="text-muted mb-2">Arveid pole veel loodud</h5>
+            <p class="text-muted mb-3">Lisa sellele kliendile esimene arve.</p>
+            <a href="{{ url_for('invoices.new_invoice') }}?client_id={{ client.id }}" class="btn btn-primary">
+              <i class="bi bi-plus-lg me-1"></i>Lisa esimene arve
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-dismiss alerts
+document.addEventListener('DOMContentLoaded', function() {
+  const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
+  alerts.forEach(alert => {
+    setTimeout(() => {
+      if (bootstrap && bootstrap.Alert) {
+        const bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+      }
+    }, 5000);
+  });
+});
+</script>
+{% endblock %}

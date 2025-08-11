@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Arve {{ invoice.number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 25mm 20mm 20mm 20mm;
+        }
+        
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #2c2c2c;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .letterhead {
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 3px double #8b4513;
+            padding-bottom: 25px;
+        }
+        
+        .company-name {
+            font-size: 36px;
+            font-weight: normal;
+            color: #8b4513;
+            margin-bottom: 8px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        
+        .company-details {
+            font-size: 11px;
+            color: #666;
+            font-style: italic;
+            letter-spacing: 1px;
+        }
+        
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+        
+        .invoice-title-section {
+            text-align: left;
+        }
+        
+        .invoice-title {
+            font-size: 28px;
+            color: #8b4513;
+            margin-bottom: 5px;
+            font-weight: normal;
+            letter-spacing: 2px;
+        }
+        
+        .invoice-number {
+            font-size: 16px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .invoice-date-section {
+            text-align: right;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .date-line {
+            margin-bottom: 5px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 3px;
+        }
+        
+        .client-section {
+            margin-bottom: 35px;
+        }
+        
+        .client-label {
+            font-size: 14px;
+            color: #8b4513;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .client-info {
+            background: #faf8f3;
+            border: 1px solid #e8e2d4;
+            padding: 20px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .client-name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+        }
+        
+        .items-section {
+            margin-bottom: 30px;
+        }
+        
+        .items-title {
+            font-size: 16px;
+            color: #8b4513;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #8b4513;
+            padding-bottom: 8px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+        }
+        
+        .items-table thead {
+            background: #8b4513;
+            color: white;
+        }
+        
+        .items-table th {
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: normal;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .items-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e8e2d4;
+            vertical-align: top;
+        }
+        
+        .items-table tbody tr:nth-child(even) {
+            background: #faf8f3;
+        }
+        
+        .items-table .description {
+            width: 50%;
+            font-style: italic;
+        }
+        
+        .items-table .number {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            width: 16.67%;
+        }
+        
+        .totals-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+        
+        .totals-table {
+            border-collapse: collapse;
+            min-width: 300px;
+        }
+        
+        .totals-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #e8e2d4;
+        }
+        
+        .totals-label {
+            text-align: left;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .totals-amount {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            width: 120px;
+        }
+        
+        .total-row {
+            background: #8b4513;
+            color: white;
+            border: none !important;
+        }
+        
+        .total-row td {
+            border: none;
+            font-size: 16px;
+            padding: 15px;
+        }
+        
+        .total-row .totals-label {
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .payment-terms {
+            margin-top: 40px;
+            padding: 25px;
+            background: #faf8f3;
+            border-left: 5px solid #8b4513;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+        
+        .payment-terms h4 {
+            margin: 0 0 15px 0;
+            color: #8b4513;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .reference-highlight {
+            background: white;
+            padding: 8px 12px;
+            border: 1px solid #e8e2d4;
+            display: inline-block;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        
+        .signature-section {
+            margin-top: 50px;
+            text-align: right;
+        }
+        
+        .signature-line {
+            border-bottom: 1px solid #8b4513;
+            width: 200px;
+            margin: 30px 0 10px auto;
+        }
+        
+        .signature-label {
+            font-size: 10px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #e8e2d4;
+            text-align: center;
+            font-size: 9px;
+            color: #999;
+            font-style: italic;
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 20mm;
+            right: 20mm;
+            transform: rotate(15deg);
+            padding: 5px 15px;
+            border: 2px solid;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .status-mustand { color: #f39c12; border-color: #f39c12; background: rgba(243, 156, 18, 0.1); }
+        .status-saadetud { color: #3498db; border-color: #3498db; background: rgba(52, 152, 219, 0.1); }
+        .status-makstud { color: #27ae60; border-color: #27ae60; background: rgba(39, 174, 96, 0.1); }
+        .status-overdue { color: #e74c3c; border-color: #e74c3c; background: rgba(231, 76, 60, 0.1); }
+    </style>
+</head>
+<body>
+    <div class="status-indicator 
+        {% if invoice.status == 'mustand' %}status-mustand
+        {% elif invoice.status == 'saadetud' %}status-saadetud
+        {% elif invoice.status == 'makstud' %}status-makstud
+        {% elif invoice.status == 'tähtaeg ületatud' %}status-overdue
+        {% endif %}">
+        {% if invoice.status == 'mustand' %}Draft
+        {% elif invoice.status == 'saadetud' %}Sent
+        {% elif invoice.status == 'makstud' %}Paid
+        {% elif invoice.status == 'tähtaeg ületatud' %}Overdue
+        {% else %}{{ invoice.status }}{% endif %}
+    </div>
+
+    <div class="letterhead">
+        <div class="company-name">BilliPocket</div>
+        <div class="company-details">
+            Professional Invoicing Solutions<br>
+            contact@billipocket.ee • +372 5555 0000
+        </div>
+    </div>
+
+    <div class="invoice-header">
+        <div class="invoice-title-section">
+            <div class="invoice-title">Invoice</div>
+            <div class="invoice-number">№ {{ invoice.number }}</div>
+        </div>
+        <div class="invoice-date-section">
+            <div class="date-line"><strong>Issued:</strong> {{ invoice.date.strftime('%d %B, %Y') }}</div>
+            <div class="date-line"><strong>Due:</strong> {{ invoice.due_date.strftime('%d %B, %Y') }}</div>
+        </div>
+    </div>
+
+    <div class="client-section">
+        <div class="client-label">Bill To</div>
+        <div class="client-info">
+            <div class="client-name">{{ invoice.client.name }}</div>
+            {% if invoice.client.registry_code %}<div>Registry Code: {{ invoice.client.registry_code }}</div>{% endif %}
+            {% if invoice.client.address %}<div>{{ invoice.client.address }}</div>{% endif %}
+            {% if invoice.client.email %}<div>Email: {{ invoice.client.email }}</div>{% endif %}
+            {% if invoice.client.phone %}<div>Phone: {{ invoice.client.phone }}</div>{% endif %}
+        </div>
+    </div>
+
+    <div class="items-section">
+        <div class="items-title">Services Rendered</div>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th class="description">Description of Services</th>
+                    <th class="number">Quantity</th>
+                    <th class="number">Unit Price</th>
+                    <th class="number">Line Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for line in invoice.lines %}
+                <tr>
+                    <td class="description">{{ line.description }}</td>
+                    <td class="number">{{ "%.2f"|format(line.qty|float) }}</td>
+                    <td class="number">€{{ "%.2f"|format(line.unit_price|float) }}</td>
+                    <td class="number">€{{ "%.2f"|format(line.line_total|float) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="totals-container">
+        <table class="totals-table">
+            <tr>
+                <td class="totals-label">Subtotal</td>
+                <td class="totals-amount">€{{ "%.2f"|format(invoice.subtotal|float) }}</td>
+            </tr>
+            <tr>
+                <td class="totals-label">Value Added Tax ({{ invoice.vat_rate }}%)</td>
+                <td class="totals-amount">€{{ "%.2f"|format(invoice.vat_amount|float) }}</td>
+            </tr>
+            <tr class="total-row">
+                <td class="totals-label">Total Amount Due</td>
+                <td class="totals-amount">€{{ "%.2f"|format(invoice.total|float) }}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="payment-terms">
+        <h4>Payment Terms & Instructions</h4>
+        <p>Payment is due within the terms specified above. Please remit payment via bank transfer to avoid any late fees or service interruptions.</p>
+        <p><strong>Payment Reference:</strong>
+        <span class="reference-highlight">{{ invoice.number.replace('-', '') }}</span></p>
+        <p><em>Please include the reference number with your payment to ensure proper credit to your account.</em></p>
+    </div>
+
+    <div class="signature-section">
+        <div class="signature-line"></div>
+        <div class="signature-label">Authorized Signature</div>
+    </div>
+
+    <div class="footer">
+        <p>Thank you for choosing BilliPocket for your business needs.</p>
+        <p>This invoice was generated on {{ today.strftime('%d %B, %Y') }}.</p>
+    </div>
+</body>
+</html>

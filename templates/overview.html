@@ -1,0 +1,407 @@
+{% extends 'layout.html' %}
+{% block title %}Ülevaade – Billipocket{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+<section id="dashboard" class="mb-4">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">Tere tulemast tagasi!</h1>
+      <p class="text-muted mb-0">Siin on ülevaade teie äri hetkeseisust</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('invoices.new_invoice') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Loo arve
+      </a>
+      <a href="{{ url_for('clients.clients') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-person-plus me-1"></i>Lisa klient
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="bp-card text-center">
+        <div class="bp-card-body py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="text-start">
+              <div class="text-muted small">Käive (kuu)</div>
+              <div class="h4 fw-bold mb-0">{{ "%.2f"|format(metrics.revenue_month) }}€</div>
+            </div>
+            <div class="text-primary fs-1">
+              <i class="bi bi-graph-up"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="bp-card text-center">
+        <div class="bp-card-body py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="text-start">
+              <div class="text-muted small">Laekumised kokku</div>
+              <div class="h4 fw-bold mb-0">{{ "%.2f"|format(metrics.cash_in) }}€</div>
+            </div>
+            <div class="text-success fs-1">
+              <i class="bi bi-cash-coin"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="bp-card text-center">
+        <div class="bp-card-body py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="text-start">
+              <div class="text-muted small">Maksmata arved</div>
+              <div class="h4 fw-bold mb-0">{{ metrics.unpaid }}</div>
+              <small class="text-danger">{{ "%.2f"|format(metrics.outstanding) }}€</small>
+            </div>
+            <div class="text-warning fs-1">
+              <i class="bi bi-exclamation-triangle"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="bp-card text-center">
+        <div class="bp-card-body py-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="text-start">
+              <div class="text-muted small">Keskmine makseaeg</div>
+              <div class="h4 fw-bold mb-0">{{ metrics.avg_days }} päeva</div>
+            </div>
+            <div class="text-info fs-1">
+              <i class="bi bi-calendar-check"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Stats Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="bp-card">
+        <div class="bp-card-body text-center py-3">
+          <div class="h5 mb-1">{{ metrics.total_clients }}</div>
+          <div class="text-muted small">Kokku kliente</div>
+          <div class="mt-2">
+            <a href="{{ url_for('clients.clients') }}" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-people me-1"></i>Vaata kliente
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="bp-card">
+        <div class="bp-card-body text-center py-3">
+          <div class="h5 mb-1">{{ metrics.total_invoices }}</div>
+          <div class="text-muted small">Kokku arveid</div>
+          <div class="mt-2">
+            <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-file-earmark-text me-1"></i>Vaata arveid
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="bp-card">
+        <div class="bp-card-body text-center py-3">
+          <div class="h5 mb-1">{{ "%.0f"|format((metrics.cash_in / metrics.total_invoices) if metrics.total_invoices > 0 else 0) }}€</div>
+          <div class="text-muted small">Keskmine arve summa</div>
+          <div class="mt-2">
+            <a href="#" class="btn btn-outline-secondary btn-sm" onclick="scrollToChart()">
+              <i class="bi bi-graph-up me-1"></i>Vaata trendi
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <!-- Revenue Chart -->
+    <div class="col-12 col-lg-8">
+      <div class="bp-card">
+        <div class="bp-card-header d-flex align-items-center justify-content-between">
+          <h2 class="h6 m-0">
+            <i class="bi bi-graph-up me-2"></i>Käibe trend
+          </h2>
+          <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm" onclick="exportChart()">
+              <i class="bi bi-download me-1"></i>Ekspordi
+            </button>
+          </div>
+        </div>
+        <div class="bp-card-body">
+          <canvas id="revenueChart" height="120"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity & Quick Actions -->
+    <div class="col-12 col-lg-4">
+      <div class="bp-card h-100">
+        <div class="bp-card-header">
+          <h3 class="h6 m-0">
+            <i class="bi bi-clock-history me-2"></i>Viimased arved
+          </h3>
+        </div>
+        <div class="bp-card-body p-0">
+          {% if recent_invoices %}
+          <div class="list-group list-group-flush">
+            {% for invoice in recent_invoices %}
+            <div class="list-group-item d-flex justify-content-between align-items-start">
+              <div class="me-auto">
+                <div class="fw-medium">{{ invoice.no }}</div>
+                <small class="text-muted">{{ invoice.client }}</small>
+                <div class="small text-muted">{{ invoice.date }}</div>
+              </div>
+              <div class="text-end">
+                <div class="fw-medium">{{ "%.2f"|format(invoice.total) }}€</div>
+                {% if invoice.status == 'makstud' %}
+                <span class="badge bg-success small">Makstud</span>
+                {% elif invoice.status == 'saadetud' %}
+                <span class="badge bg-primary small">Saadetud</span>
+                {% elif invoice.status == 'mustand' %}
+                <span class="badge bg-secondary small">Mustand</span>
+                {% elif invoice.status == 'tähtaeg ületatud' %}
+                <span class="badge bg-danger small">Tähtaeg ületatud</span>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <div class="p-3 text-center border-top">
+            <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-arrow-right me-1"></i>Vaata kõiki arveid
+            </a>
+          </div>
+          {% else %}
+          <div class="text-center py-4">
+            <i class="bi bi-file-earmark-text display-4 text-muted"></i>
+            <div class="h6 text-muted mt-2">Arveid pole veel</div>
+            <p class="text-muted small mb-3">Alustage oma esimese arve loomisega</p>
+            <a href="{{ url_for('invoices.new_invoice') }}" class="btn btn-primary btn-sm">
+              <i class="bi bi-plus-lg me-1"></i>Loo esimene arve
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Cards -->
+  <div class="row g-3">
+    <div class="col-md-6 col-lg-3">
+      <div class="bp-card text-center h-100">
+        <div class="bp-card-body">
+          <i class="bi bi-plus-circle display-4 text-primary mb-3"></i>
+          <h5 class="card-title">Loo uus arve</h5>
+          <p class="text-muted small">Koosta arve olemasolevale kliendile</p>
+          <a href="{{ url_for('invoices.new_invoice') }}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Alusta
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="bp-card text-center h-100">
+        <div class="bp-card-body">
+          <i class="bi bi-person-plus display-4 text-success mb-3"></i>
+          <h5 class="card-title">Lisa klient</h5>
+          <p class="text-muted small">Registreeri uus klient süsteemi</p>
+          <a href="{{ url_for('clients.new_client') }}" class="btn btn-success">
+            <i class="bi bi-person-plus me-1"></i>Lisa
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="bp-card text-center h-100">
+        <div class="bp-card-body">
+          <i class="bi bi-graph-up display-4 text-info mb-3"></i>
+          <h5 class="card-title">Aruanded</h5>
+          <p class="text-muted small">Vaata äri statistikat ja aruandeid</p>
+          <a href="{{ url_for('dashboard.reports') }}" class="btn btn-info">
+            <i class="bi bi-bar-chart me-1"></i>Ava
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+      <div class="bp-card text-center h-100">
+        <div class="bp-card-body">
+          <i class="bi bi-gear display-4 text-secondary mb-3"></i>
+          <h5 class="card-title">Seaded</h5>
+          <p class="text-muted small">Kohanda süsteemi oma vajadustele</p>
+          <a href="{{ url_for('dashboard.settings') }}" class="btn btn-secondary">
+            <i class="bi bi-gear me-1"></i>Seadista
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Revenue Chart
+const ctx = document.getElementById('revenueChart');
+if (ctx) {
+  // Generate sample data - in real implementation, this would come from backend
+  const now = new Date();
+  const months = [];
+  const revenueData = [];
+  
+  for (let i = 11; i >= 0; i--) {
+    const monthDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(monthDate.toLocaleDateString('et-EE', { month: 'short', year: '2-digit' }));
+    
+    // Generate realistic revenue data based on current metrics
+    const baseRevenue = {{ metrics.revenue_month }};
+    const variation = Math.random() * 0.4 - 0.2; // ±20% variation
+    revenueData.push(Math.max(0, baseRevenue * (1 + variation)));
+  }
+  
+  const revenueChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Käive (€)',
+        data: revenueData,
+        borderColor: 'rgb(17, 214, 222)',
+        backgroundColor: 'rgba(17, 214, 222, 0.1)',
+        borderWidth: 3,
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: 'rgb(17, 214, 222)',
+        pointBorderColor: '#ffffff',
+        pointBorderWidth: 2,
+        pointRadius: 5,
+        pointHoverRadius: 7
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.8)',
+          titleColor: '#ffffff',
+          bodyColor: '#ffffff',
+          borderColor: 'rgb(17, 214, 222)',
+          borderWidth: 1,
+          cornerRadius: 8,
+          callbacks: {
+            label: function(context) {
+              return 'Käive: ' + context.parsed.y.toFixed(2) + '€';
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: {
+            display: false
+          },
+          border: {
+            display: false
+          }
+        },
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          },
+          border: {
+            display: false
+          },
+          ticks: {
+            callback: function(value) {
+              return value.toFixed(0) + '€';
+            }
+          }
+        }
+      },
+      interaction: {
+        intersect: false,
+        mode: 'index'
+      }
+    }
+  });
+  
+  // Export chart function
+  window.exportChart = function() {
+    const link = document.createElement('a');
+    link.download = 'kaibe-trend.png';
+    link.href = revenueChart.toBase64Image();
+    link.click();
+  };
+}
+
+// Scroll to chart function
+function scrollToChart() {
+  document.getElementById('revenueChart').scrollIntoView({
+    behavior: 'smooth',
+    block: 'center'
+  });
+}
+
+// Auto-refresh dashboard data every 5 minutes
+setInterval(function() {
+  // In a real implementation, you would make an AJAX call to refresh the data
+  console.log('Dashboard data refresh (implementation needed)');
+}, 5 * 60 * 1000);
+
+// Add loading state for action buttons
+document.addEventListener('DOMContentLoaded', function() {
+  const actionButtons = document.querySelectorAll('.btn');
+  
+  actionButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      if (this.href && !this.href.includes('#')) {
+        this.innerHTML = '<div class="spinner-border spinner-border-sm me-1" role="status"></div>Laen...';
+      }
+    });
+  });
+});
+
+// Welcome message based on time of day
+document.addEventListener('DOMContentLoaded', function() {
+  const hour = new Date().getHours();
+  const welcomeText = document.querySelector('h1');
+  
+  if (welcomeText) {
+    if (hour < 12) {
+      welcomeText.textContent = 'Tere hommikust!';
+    } else if (hour < 18) {
+      welcomeText.textContent = 'Tere päevast!';
+    } else {
+      welcomeText.textContent = 'Tere õhtust!';
+    }
+  }
+});
+</script>
+{% endblock %}

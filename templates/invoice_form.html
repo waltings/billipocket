@@ -1,0 +1,541 @@
+{% extends 'layout.html' %}
+{% block title %}{{ title }} – Billipocket{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+.invoice-lines {
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+  background: #f8f9fa;
+}
+.invoice-line {
+  background: white;
+  border-bottom: 1px solid #dee2e6;
+  padding: 1rem;
+}
+.invoice-line:last-child {
+  border-bottom: none;
+}
+.invoice-totals {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 0.375rem;
+}
+.drag-handle {
+  cursor: move;
+  color: #6c757d;
+}
+.drag-handle:hover {
+  color: #495057;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<section id="invoice-form" class="mb-4">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">{{ title }}</h1>
+      <p class="text-muted mb-0">
+        {% if invoice %}
+        Muuda arve "{{ invoice.number }}" andmeid
+        {% else %}
+        Loo uus arve oma kliendile
+        {% endif %}
+      </p>
+    </div>
+    <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Tagasi arvetele
+    </a>
+  </div>
+
+  <form method="POST" id="invoiceForm" novalidate>
+    {{ form.hidden_tag() }}
+    
+    <div class="row">
+      <!-- Left Column - Invoice Details -->
+      <div class="col-lg-8">
+        <!-- Invoice Header -->
+        <div class="bp-card mb-4">
+          <div class="bp-card-header">
+            <h2 class="h6 m-0">
+              <i class="bi bi-file-earmark-text me-2"></i>Arve andmed
+            </h2>
+          </div>
+          <div class="bp-card-body">
+            <div class="row g-3">
+              <!-- Client Selection -->
+              <div class="col-md-6">
+                <label for="{{ form.client_id.id }}" class="form-label">
+                  {{ form.client_id.label.text }} <span class="text-danger">*</span>
+                </label>
+                {{ form.client_id(class_="form-select" + (" is-invalid" if form.client_id.errors else "")) }}
+                {% if form.client_id.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.client_id.errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+                <div class="form-text">Vali klient, kellele arve saadetakse</div>
+              </div>
+
+              <!-- Invoice Status -->
+              <div class="col-md-6">
+                <label for="{{ form.status.id }}" class="form-label">
+                  {{ form.status.label.text }}
+                </label>
+                {{ form.status(class_="form-select" + (" is-invalid" if form.status.errors else "")) }}
+                {% if form.status.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.status.errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Invoice Date -->
+              <div class="col-md-6">
+                <label for="{{ form.date.id }}" class="form-label">
+                  {{ form.date.label.text }} <span class="text-danger">*</span>
+                </label>
+                {{ form.date(class_="form-control" + (" is-invalid" if form.date.errors else "")) }}
+                {% if form.date.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.date.errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Due Date -->
+              <div class="col-md-6">
+                <label for="{{ form.due_date.id }}" class="form-label">
+                  {{ form.due_date.label.text }} <span class="text-danger">*</span>
+                </label>
+                {{ form.due_date(class_="form-control" + (" is-invalid" if form.due_date.errors else "")) }}
+                {% if form.due_date.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.due_date.errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- VAT Rate -->
+              <div class="col-md-6">
+                <label for="{{ form.vat_rate.id }}" class="form-label">
+                  {{ form.vat_rate.label.text }}
+                </label>
+                <div class="input-group">
+                  {{ form.vat_rate(class_="form-control" + (" is-invalid" if form.vat_rate.errors else "")) }}
+                  <span class="input-group-text">%</span>
+                  {% if form.vat_rate.errors %}
+                  <div class="invalid-feedback">
+                    {% for error in form.vat_rate.errors %}{{ error }}{% endfor %}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="form-text">Eestis kehtiv KM määr on 24%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice Lines -->
+        <div class="bp-card">
+          <div class="bp-card-header d-flex justify-content-between align-items-center">
+            <h3 class="h6 m-0">
+              <i class="bi bi-list-ul me-2"></i>Arve read
+            </h3>
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="addInvoiceLine()">
+              <i class="bi bi-plus-lg me-1"></i>Lisa rida
+            </button>
+          </div>
+          <div class="bp-card-body p-0">
+            <div id="invoice-lines-container">
+              {% for line_form in form.lines %}
+              <div class="invoice-line" data-line-index="{{ loop.index0 }}">
+                {{ line_form.id() }}
+                <div class="row g-3 align-items-end">
+                  <div class="col-md-1 text-center">
+                    <i class="bi bi-grip-vertical drag-handle" title="Lohista rida"></i>
+                  </div>
+                  <div class="col-md-5">
+                    <label for="{{ line_form.description.id }}" class="form-label small">Kirjeldus</label>
+                    {{ line_form.description(class_="form-control" + (" is-invalid" if line_form.description.errors else ""), placeholder="Teenuse või toote kirjeldus") }}
+                    {% if line_form.description.errors %}
+                    <div class="invalid-feedback">
+                      {% for error in line_form.description.errors %}{{ error }}{% endfor %}
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-2">
+                    <label for="{{ line_form.qty.id }}" class="form-label small">Kogus</label>
+                    {{ line_form.qty(class_="form-control line-qty" + (" is-invalid" if line_form.qty.errors else ""), placeholder="1", step="0.01") }}
+                    {% if line_form.qty.errors %}
+                    <div class="invalid-feedback">
+                      {% for error in line_form.qty.errors %}{{ error }}{% endfor %}
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-2">
+                    <label for="{{ line_form.unit_price.id }}" class="form-label small">Ühiku hind</label>
+                    <div class="input-group">
+                      {{ line_form.unit_price(class_="form-control line-price" + (" is-invalid" if line_form.unit_price.errors else ""), placeholder="0.00", step="0.01") }}
+                      <span class="input-group-text">€</span>
+                    </div>
+                    {% if line_form.unit_price.errors %}
+                    <div class="invalid-feedback">
+                      {% for error in line_form.unit_price.errors %}{{ error }}{% endfor %}
+                    </div>
+                    {% endif %}
+                  </div>
+                  <div class="col-md-1">
+                    <label class="form-label small">Kokku</label>
+                    <div class="fw-bold text-end line-total">0.00€</div>
+                  </div>
+                  <div class="col-md-1">
+                    <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeInvoiceLine(this)" title="Eemalda rida">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+            
+            {% if not form.lines.entries %}
+            <div class="text-center py-4">
+              <p class="text-muted mb-3">Arvele pole veel ridu lisatud</p>
+              <button type="button" class="btn btn-primary" onclick="addInvoiceLine()">
+                <i class="bi bi-plus-lg me-1"></i>Lisa esimene rida
+              </button>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Invoice Summary -->
+      <div class="col-lg-4">
+        <!-- Invoice Totals -->
+        <div class="bp-card invoice-totals mb-4">
+          <div class="bp-card-header">
+            <h3 class="h6 m-0">
+              <i class="bi bi-calculator me-2"></i>Arve kokkuvõte
+            </h3>
+          </div>
+          <div class="bp-card-body">
+            <table class="table table-borderless mb-0">
+              <tbody>
+                <tr>
+                  <td class="text-muted">Vahesumma:</td>
+                  <td class="text-end" id="subtotal">0.00€</td>
+                </tr>
+                <tr>
+                  <td class="text-muted">KM (<span id="vat-rate-display">24</span>%):</td>
+                  <td class="text-end" id="vat-amount">0.00€</td>
+                </tr>
+                <tr class="border-top">
+                  <td class="fw-bold">Kokku:</td>
+                  <td class="text-end fw-bold fs-5" id="total-amount">0.00€</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="bp-card">
+          <div class="bp-card-body">
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-1"></i>
+                {% if invoice %}Uuenda arvet{% else %}Loo arve{% endif %}
+              </button>
+              
+              {% if invoice and invoice.status == 'mustand' %}
+              <button type="button" class="btn btn-success" onclick="submitAndSend()">
+                <i class="bi bi-send me-1"></i>Salvesta ja saada
+              </button>
+              {% endif %}
+              
+              <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-lg me-1"></i>Tühista
+              </a>
+              
+              {% if invoice %}
+              <hr>
+              <div class="small text-muted mb-2">Arve eelvaade:</div>
+              <div class="d-grid gap-1">
+                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='standard') }}" 
+                   class="btn btn-outline-info btn-sm" target="_blank">
+                  <i class="bi bi-file-earmark-pdf me-1"></i>Standard PDF
+                </a>
+                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='modern') }}" 
+                   class="btn btn-outline-info btn-sm" target="_blank">
+                  <i class="bi bi-file-earmark-pdf me-1"></i>Modern PDF
+                </a>
+                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='elegant') }}" 
+                   class="btn btn-outline-info btn-sm" target="_blank">
+                  <i class="bi bi-file-earmark-pdf me-1"></i>Elegant PDF
+                </a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice Tips -->
+        <div class="bp-card mt-4">
+          <div class="bp-card-header">
+            <h4 class="h6 m-0">
+              <i class="bi bi-lightbulb me-2"></i>Nõuanded
+            </h4>
+          </div>
+          <div class="bp-card-body">
+            <ul class="list-unstyled small mb-0">
+              <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Kontrolli kliendi kontaktandmeid</li>
+              <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Lisa selged teenuste kirjeldused</li>
+              <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Määra maksetähtaeg (soovitavalt 14 päeva)</li>
+              <li><i class="bi bi-check-circle text-success me-2"></i>Salvesta enne saatmist mustandina</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+
+<!-- Line Template (hidden) -->
+<div id="line-template" class="d-none">
+  <div class="invoice-line" data-line-index="">
+    <div class="row g-3 align-items-end">
+      <div class="col-md-1 text-center">
+        <i class="bi bi-grip-vertical drag-handle" title="Lohista rida"></i>
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small">Kirjeldus</label>
+        <input type="text" name="lines-{index}-description" class="form-control" placeholder="Teenuse või toote kirjeldus">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Kogus</label>
+        <input type="number" name="lines-{index}-qty" class="form-control line-qty" placeholder="1" step="0.01">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small">Ühiku hind</label>
+        <div class="input-group">
+          <input type="number" name="lines-{index}-unit_price" class="form-control line-price" placeholder="0.00" step="0.01">
+          <span class="input-group-text">€</span>
+        </div>
+      </div>
+      <div class="col-md-1">
+        <label class="form-label small">Kokku</label>
+        <div class="fw-bold text-end line-total">0.00€</div>
+      </div>
+      <div class="col-md-1">
+        <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="removeInvoiceLine(this)" title="Eemalda rida">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let lineIndex = {{ form.lines|length or 0 }};
+
+// Add new invoice line
+function addInvoiceLine() {
+  const container = document.getElementById('invoice-lines-container');
+  const template = document.getElementById('line-template');
+  const newLine = template.cloneNode(true);
+  
+  newLine.removeAttribute('id');
+  newLine.classList.remove('d-none');
+  newLine.setAttribute('data-line-index', lineIndex);
+  
+  // Update form field names and ids
+  const inputs = newLine.querySelectorAll('input');
+  inputs.forEach(input => {
+    const name = input.getAttribute('name');
+    if (name) {
+      input.setAttribute('name', name.replace('{index}', lineIndex));
+      input.setAttribute('id', name.replace('{index}', lineIndex).replace('-', '_'));
+    }
+  });
+  
+  // Update labels
+  const labels = newLine.querySelectorAll('label');
+  labels.forEach(label => {
+    const forAttr = label.getAttribute('for');
+    if (forAttr) {
+      label.setAttribute('for', forAttr.replace('{index}', lineIndex).replace('-', '_'));
+    }
+  });
+  
+  container.appendChild(newLine.firstElementChild);
+  
+  // Add event listeners
+  addLineEventListeners(container.lastElementChild);
+  
+  lineIndex++;
+  updateTotals();
+}
+
+// Remove invoice line
+function removeInvoiceLine(button) {
+  const line = button.closest('.invoice-line');
+  const container = document.getElementById('invoice-lines-container');
+  
+  // Always allow removing lines, but ensure at least one empty line remains
+  line.remove();
+  
+  // If no lines left, add an empty one
+  if (container.children.length === 0) {
+    addInvoiceLine();
+  }
+  
+  updateTotals();
+}
+
+// Add event listeners to line inputs
+function addLineEventListeners(line) {
+  const qtyInput = line.querySelector('.line-qty');
+  const priceInput = line.querySelector('.line-price');
+  
+  [qtyInput, priceInput].forEach(input => {
+    if (input) {
+      input.addEventListener('input', updateTotals);
+      input.addEventListener('blur', updateTotals);
+    }
+  });
+}
+
+// Update invoice totals
+function updateTotals() {
+  let subtotal = 0;
+  
+  // Calculate line totals
+  document.querySelectorAll('.invoice-line').forEach(line => {
+    const qty = parseFloat(line.querySelector('.line-qty')?.value) || 0;
+    const price = parseFloat(line.querySelector('.line-price')?.value) || 0;
+    const lineTotal = qty * price;
+    
+    const lineTotalDisplay = line.querySelector('.line-total');
+    if (lineTotalDisplay) {
+      lineTotalDisplay.textContent = lineTotal.toFixed(2) + '€';
+    }
+    
+    subtotal += lineTotal;
+  });
+  
+  // Get VAT rate
+  const vatRateInput = document.getElementById('vat_rate');
+  const vatRate = parseFloat(vatRateInput?.value) || 24;
+  
+  // Calculate VAT amount
+  const vatAmount = subtotal * (vatRate / 100);
+  const total = subtotal + vatAmount;
+  
+  // Update displays
+  document.getElementById('subtotal').textContent = subtotal.toFixed(2) + '€';
+  document.getElementById('vat-rate-display').textContent = vatRate.toString();
+  document.getElementById('vat-amount').textContent = vatAmount.toFixed(2) + '€';
+  document.getElementById('total-amount').textContent = total.toFixed(2) + '€';
+}
+
+// Submit and send function
+function submitAndSend() {
+  const statusField = document.getElementById('status');
+  statusField.value = 'saadetud';
+  document.getElementById('invoiceForm').submit();
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Add event listeners to existing lines
+  document.querySelectorAll('.invoice-line').forEach(line => {
+    addLineEventListeners(line);
+  });
+  
+  // VAT rate change listener
+  const vatRateInput = document.getElementById('vat_rate');
+  if (vatRateInput) {
+    vatRateInput.addEventListener('input', updateTotals);
+    vatRateInput.addEventListener('blur', updateTotals);
+  }
+  
+  // Auto-fill due date based on invoice date
+  const dateInput = document.getElementById('date');
+  const dueDateInput = document.getElementById('due_date');
+  
+  if (dateInput && dueDateInput) {
+    dateInput.addEventListener('change', function() {
+      if (this.value && !dueDateInput.value) {
+        const invoiceDate = new Date(this.value);
+        const dueDate = new Date(invoiceDate.getTime() + (14 * 24 * 60 * 60 * 1000)); // Add 14 days
+        dueDateInput.value = dueDate.toISOString().split('T')[0];
+      }
+    });
+  }
+  
+  // Form validation
+  const form = document.getElementById('invoiceForm');
+  form.addEventListener('submit', function(event) {
+    let isValid = true;
+    
+    // Check if at least one line has data
+    const lines = document.querySelectorAll('.invoice-line');
+    let hasValidLine = false;
+    
+    lines.forEach(line => {
+      const description = line.querySelector('input[name*="description"]')?.value;
+      const qty = line.querySelector('input[name*="qty"]')?.value;
+      const price = line.querySelector('input[name*="unit_price"]')?.value;
+      
+      if (description && qty && price) {
+        hasValidLine = true;
+      }
+    });
+    
+    if (!hasValidLine) {
+      event.preventDefault();
+      alert('Palun lisa vähemalt üks arve rida.');
+      isValid = false;
+    }
+    
+    return isValid;
+  });
+  
+  // Initial totals calculation
+  updateTotals();
+  
+  // Auto-focus first empty field
+  const firstEmptyInput = document.querySelector('input:not([type="hidden"]):not([readonly]):not([disabled])');
+  if (firstEmptyInput && !firstEmptyInput.value) {
+    firstEmptyInput.focus();
+  }
+});
+
+// Real-time validation feedback
+document.querySelectorAll('input, select, textarea').forEach(function(field) {
+  field.addEventListener('blur', function() {
+    if (this.checkValidity()) {
+      this.classList.remove('is-invalid');
+      this.classList.add('is-valid');
+    } else {
+      this.classList.remove('is-valid');
+      this.classList.add('is-invalid');
+    }
+  });
+  
+  field.addEventListener('input', function() {
+    if (this.classList.contains('is-invalid') && this.checkValidity()) {
+      this.classList.remove('is-invalid');
+      this.classList.add('is-valid');
+    }
+  });
+});
+</script>
+{% endblock %}

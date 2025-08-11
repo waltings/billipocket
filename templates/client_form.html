@@ -1,0 +1,298 @@
+{% extends 'layout.html' %}
+{% block title %}{{ title }} – Billipocket{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+<section id="client-form" class="mb-4">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">{{ title }}</h1>
+      <p class="text-muted mb-0">
+        {% if client %}
+        Muuda kliendi "{{ client.name }}" andmeid
+        {% else %}
+        Lisa uus klient oma kliendibaasi
+        {% endif %}
+      </p>
+    </div>
+    <a href="{{ url_for('clients.clients') }}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Tagasi klientidele
+    </a>
+  </div>
+
+  <!-- Client Form -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="bp-card">
+        <div class="bp-card-header">
+          <h2 class="h6 m-0">
+            <i class="bi bi-person me-2"></i>{{ title }}
+          </h2>
+        </div>
+        <div class="bp-card-body">
+          <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+            
+            <div class="row g-3">
+              <!-- Client Name -->
+              <div class="col-md-6">
+                <label for="{{ form.name.id }}" class="form-label">
+                  {{ form.name.label.text }} <span class="text-danger">*</span>
+                </label>
+                {{ form.name(class_="form-control" + (" is-invalid" if form.name.errors else "")) }}
+                {% if form.name.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.name.errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Registry Code -->
+              <div class="col-md-6">
+                <label for="{{ form.registry_code.id }}" class="form-label">
+                  {{ form.registry_code.label.text }}
+                </label>
+                {{ form.registry_code(class_="form-control" + (" is-invalid" if form.registry_code.errors else "")) }}
+                {% if form.registry_code.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.registry_code.errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+                <div class="form-text">Ettevõtte registrikood (valikuline)</div>
+              </div>
+
+              <!-- Email -->
+              <div class="col-md-6">
+                <label for="{{ form.email.id }}" class="form-label">
+                  {{ form.email.label.text }}
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                  {{ form.email(class_="form-control" + (" is-invalid" if form.email.errors else "")) }}
+                  {% if form.email.errors %}
+                  <div class="invalid-feedback">
+                    {% for error in form.email.errors %}{{ error }}{% endfor %}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="form-text">E-posti aadress arvete saatmiseks</div>
+              </div>
+
+              <!-- Phone -->
+              <div class="col-md-6">
+                <label for="{{ form.phone.id }}" class="form-label">
+                  {{ form.phone.label.text }}
+                </label>
+                <div class="input-group">
+                  <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+                  {{ form.phone(class_="form-control" + (" is-invalid" if form.phone.errors else "")) }}
+                  {% if form.phone.errors %}
+                  <div class="invalid-feedback">
+                    {% for error in form.phone.errors %}{{ error }}{% endfor %}
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="form-text">Kontakttelefon</div>
+              </div>
+
+              <!-- Address -->
+              <div class="col-12">
+                <label for="{{ form.address.id }}" class="form-label">
+                  {{ form.address.label.text }}
+                </label>
+                {{ form.address(class_="form-control" + (" is-invalid" if form.address.errors else ""), rows="3") }}
+                {% if form.address.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.address.errors %}{{ error }}{% endfor %}
+                </div>
+                {% endif %}
+                <div class="form-text">Kliendi aadressi andmed</div>
+              </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="row mt-4">
+              <div class="col-12">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    {% if client %}
+                    <button type="button" class="btn btn-outline-danger" onclick="confirmDelete()">
+                      <i class="bi bi-trash me-1"></i>Kustuta klient
+                    </button>
+                    {% endif %}
+                  </div>
+                  <div class="d-flex gap-2">
+                    <a href="{{ url_for('clients.clients') }}" class="btn btn-secondary">
+                      <i class="bi bi-x-lg me-1"></i>Tühista
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                      <i class="bi bi-check-lg me-1"></i>
+                      {% if client %}Uuenda klienti{% else %}Loo klient{% endif %}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Client Statistics (if editing existing client) -->
+      {% if client %}
+      <div class="bp-card mt-4">
+        <div class="bp-card-header">
+          <h3 class="h6 m-0">
+            <i class="bi bi-graph-up me-2"></i>Kliendi statistika
+          </h3>
+        </div>
+        <div class="bp-card-body">
+          <div class="row text-center">
+            <div class="col-md-4">
+              <div class="border-end border-light">
+                <div class="h4 mb-1 text-primary">{{ client.invoice_count }}</div>
+                <div class="small text-muted">Arveid kokku</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="border-end border-light">
+                <div class="h4 mb-1 text-success">{{ "%.2f"|format(client.total_revenue) }}€</div>
+                <div class="small text-muted">Kogutulu</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="h4 mb-1 text-info">
+                {% if client.last_invoice_date %}
+                {{ client.last_invoice_date.strftime('%d.%m.%Y') }}
+                {% else %}
+                -
+                {% endif %}
+              </div>
+              <div class="small text-muted">Viimane arve</div>
+            </div>
+          </div>
+          
+          {% if client.invoice_count > 0 %}
+          <div class="text-center mt-3">
+            <a href="{{ url_for('invoices.invoices') }}?client_id={{ client.id }}" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-file-earmark-text me-1"></i>Vaata kliendi arveid
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Delete Confirmation Modal -->
+{% if client %}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kustuta klient</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        {% if client.invoice_count > 0 %}
+        <div class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          <strong>Hoiatus!</strong> Klienti "{{ client.name }}" ei saa kustutada, kuna tal on {{ client.invoice_count }} arvet.
+        </div>
+        <p class="mb-0">Et klienti kustutada, tuleb esmalt kustutada kõik tema arved.</p>
+        {% else %}
+        <p class="mb-2">Kas oled kindel, et soovid kustutada klienti "<strong>{{ client.name }}</strong>"?</p>
+        <small class="text-muted">Seda toimingut ei saa tagasi võtta.</small>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tühista</button>
+        {% if client.invoice_count == 0 %}
+        <form method="POST" action="{{ url_for('clients.delete_client', client_id=client.id) }}" style="display: inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash me-1"></i>Kustuta klient
+          </button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Form validation
+(function() {
+  'use strict';
+  
+  const forms = document.querySelectorAll('.needs-validation');
+  
+  Array.prototype.slice.call(forms).forEach(function(form) {
+    form.addEventListener('submit', function(event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+})();
+
+// Delete confirmation
+{% if client %}
+function confirmDelete() {
+  new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+{% endif %}
+
+// Auto-format phone number
+const phoneField = document.getElementById('{{ form.phone.id }}');
+if (phoneField) {
+  phoneField.addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    
+    if (value.startsWith('372')) {
+      // Estonian number format: +372 XXXX XXXX
+      if (value.length <= 3) {
+        e.target.value = '+' + value;
+      } else if (value.length <= 7) {
+        e.target.value = '+' + value.slice(0, 3) + ' ' + value.slice(3);
+      } else {
+        e.target.value = '+' + value.slice(0, 3) + ' ' + value.slice(3, 7) + ' ' + value.slice(7, 11);
+      }
+    } else if (value.length > 0) {
+      // Other international format
+      e.target.value = '+' + value;
+    }
+  });
+}
+
+// Real-time validation feedback
+document.querySelectorAll('input, textarea').forEach(function(field) {
+  field.addEventListener('blur', function() {
+    if (this.checkValidity()) {
+      this.classList.remove('is-invalid');
+      this.classList.add('is-valid');
+    } else {
+      this.classList.remove('is-valid');
+      this.classList.add('is-invalid');
+    }
+  });
+  
+  field.addEventListener('input', function() {
+    if (this.classList.contains('is-invalid') && this.checkValidity()) {
+      this.classList.remove('is-invalid');
+      this.classList.add('is-valid');
+    }
+  });
+});
+</script>
+{% endblock %}

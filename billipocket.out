@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/run.py", line 9, in <module>
+    app = create_app()
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/__init__.py", line 50, in create_app
+    from app.routes.clients import clients_bp
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/clients.py", line 3, in <module>
+    from werkzeug.exceptions import ValidationError
+ImportError: cannot import name 'ValidationError' from 'werkzeug.exceptions' (/Users/keijovalting/Downloads/billipocket_gpt5/.venv/lib/python3.9/site-packages/werkzeug/exceptions.py)

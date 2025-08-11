@@ -1,0 +1,335 @@
+{% extends 'layout.html' %}
+{% block title %}Arve {{ invoice.number }} – Billipocket{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+<section id="invoice-detail" class="mb-4">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">Arve {{ invoice.number }}</h1>
+      <p class="text-muted mb-0">{{ invoice.client.name }} · {{ invoice.date.strftime('%d.%m.%Y') }}</p>
+    </div>
+    <div class="d-flex gap-2">
+      <!-- Status Actions -->
+      {% if invoice.status == 'mustand' %}
+      <form method="POST" action="{{ url_for('invoices.change_status', invoice_id=invoice.id, new_status='saadetud') }}" class="d-inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="btn btn-warning">
+          <i class="bi bi-send me-1"></i>Märgi saadetud
+        </button>
+      </form>
+      {% elif invoice.status == 'saadetud' %}
+      <form method="POST" action="{{ url_for('invoices.change_status', invoice_id=invoice.id, new_status='makstud') }}" class="d-inline">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        <button type="submit" class="btn btn-success">
+          <i class="bi bi-check-circle me-1"></i>Märgi makstud
+        </button>
+      </form>
+      {% endif %}
+      
+      <!-- Action Buttons -->
+      {% if invoice.status != 'makstud' %}
+      <a href="{{ url_for('invoices.edit_invoice', invoice_id=invoice.id) }}" class="btn btn-outline-secondary">
+        <i class="bi bi-pencil me-1"></i>Muuda
+      </a>
+      {% endif %}
+      
+      <div class="btn-group" role="group">
+        <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
+          <i class="bi bi-file-earmark-pdf me-1"></i>PDF
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='standard') }}" target="_blank">
+              <i class="bi bi-file-earmark me-2"></i>Standard PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='modern') }}" target="_blank">
+              <i class="bi bi-file-earmark me-2"></i>Modern PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='elegant') }}" target="_blank">
+              <i class="bi bi-file-earmark me-2"></i>Elegant PDF
+            </a>
+          </li>
+        </ul>
+      </div>
+      
+      <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left me-1"></i>Tagasi
+      </a>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Invoice Details -->
+    <div class="col-lg-8">
+      <!-- Invoice Header -->
+      <div class="bp-card mb-4">
+        <div class="bp-card-header">
+          <h2 class="h6 m-0">
+            <i class="bi bi-file-earmark-text me-2"></i>Arve andmed
+          </h2>
+        </div>
+        <div class="bp-card-body">
+          <div class="row">
+            <div class="col-md-6">
+              <table class="table table-borderless mb-0">
+                <tbody>
+                  <tr>
+                    <td class="text-muted">Arve number:</td>
+                    <td class="fw-medium">{{ invoice.number }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-muted">Kuupäev:</td>
+                    <td>{{ invoice.date.strftime('%d.%m.%Y') }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-muted">Maksetähtaeg:</td>
+                    <td class="{% if invoice.is_overdue %}text-danger fw-medium{% endif %}">
+                      {{ invoice.due_date.strftime('%d.%m.%Y') }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-muted">KM määr:</td>
+                    <td>{{ invoice.vat_rate }}%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="col-md-6">
+              <h6 class="mb-2">Klient</h6>
+              <div class="border-start border-primary border-2 ps-3">
+                <div class="fw-medium">{{ invoice.client.name }}</div>
+                {% if invoice.client.registry_code %}
+                <div class="small text-muted">Reg: {{ invoice.client.registry_code }}</div>
+                {% endif %}
+                {% if invoice.client.email %}
+                <div class="small">
+                  <i class="bi bi-envelope me-1"></i>
+                  <a href="mailto:{{ invoice.client.email }}" class="text-decoration-none">{{ invoice.client.email }}</a>
+                </div>
+                {% endif %}
+                {% if invoice.client.phone %}
+                <div class="small">
+                  <i class="bi bi-telephone me-1"></i>
+                  <a href="tel:{{ invoice.client.phone }}" class="text-decoration-none">{{ invoice.client.phone }}</a>
+                </div>
+                {% endif %}
+                {% if invoice.client.address %}
+                <div class="small mt-2">{{ invoice.client.address | replace('\n', '<br>') | safe }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invoice Lines -->
+      <div class="bp-card">
+        <div class="bp-card-header">
+          <h3 class="h6 m-0">
+            <i class="bi bi-list-ul me-2"></i>Arve read
+          </h3>
+        </div>
+        <div class="bp-card-body p-0">
+          {% if invoice.lines %}
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="border-0">Kirjeldus</th>
+                  <th class="border-0 text-center">Kogus</th>
+                  <th class="border-0 text-end">Ühiku hind</th>
+                  <th class="border-0 text-end">Kokku</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for line in invoice.lines %}
+                <tr>
+                  <td>{{ line.description }}</td>
+                  <td class="text-center">{{ line.qty }}</td>
+                  <td class="text-end">{{ "%.2f"|format(line.unit_price) }}€</td>
+                  <td class="text-end fw-medium">{{ "%.2f"|format(line.line_total) }}€</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-4">
+            <i class="bi bi-exclamation-circle display-6 text-warning"></i>
+            <p class="text-muted mt-2 mb-0">Arvel pole ridu</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Invoice Status -->
+      <div class="bp-card mb-4">
+        <div class="bp-card-header">
+          <h3 class="h6 m-0">
+            <i class="bi bi-circle-fill me-2"></i>Staatus
+          </h3>
+        </div>
+        <div class="bp-card-body text-center">
+          {% if invoice.status == 'mustand' %}
+          <div class="badge bg-secondary fs-6 mb-2">Mustand</div>
+          <p class="small text-muted mb-0">Arve on veel mustandina</p>
+          {% elif invoice.status == 'saadetud' %}
+          <div class="badge bg-warning text-dark fs-6 mb-2">Saadetud</div>
+          <p class="small text-muted mb-0">Arve on saadetud kliendile</p>
+          {% elif invoice.status == 'makstud' %}
+          <div class="badge bg-success fs-6 mb-2">Makstud</div>
+          <p class="small text-muted mb-0">Arve on lõplikult makstud</p>
+          {% elif invoice.status == 'tähtaeg ületatud' %}
+          <div class="badge bg-danger fs-6 mb-2">Tähtaeg ületatud</div>
+          <p class="small text-muted mb-0">Maksetähtaeg on ületatud</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Invoice Totals -->
+      <div class="bp-card mb-4">
+        <div class="bp-card-header">
+          <h3 class="h6 m-0">
+            <i class="bi bi-calculator me-2"></i>Summad
+          </h3>
+        </div>
+        <div class="bp-card-body">
+          <table class="table table-borderless mb-0">
+            <tbody>
+              <tr>
+                <td class="text-muted">Vahesumma:</td>
+                <td class="text-end">{{ "%.2f"|format(invoice.subtotal) }}€</td>
+              </tr>
+              <tr>
+                <td class="text-muted">KM ({{ invoice.vat_rate }}%):</td>
+                <td class="text-end">{{ "%.2f"|format(invoice.vat_amount) }}€</td>
+              </tr>
+              <tr class="border-top">
+                <td class="fw-bold">Kokku:</td>
+                <td class="text-end fw-bold fs-5">{{ "%.2f"|format(invoice.total) }}€</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="bp-card">
+        <div class="bp-card-header">
+          <h4 class="h6 m-0">
+            <i class="bi bi-lightning-charge me-2"></i>Kiirtoimingud
+          </h4>
+        </div>
+        <div class="bp-card-body">
+          <div class="d-grid gap-2">
+            <!-- Status Change Actions -->
+            {% if invoice.status == 'mustand' %}
+            <form method="POST" action="{{ url_for('invoices.change_status', invoice_id=invoice.id, new_status='saadetud') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <button type="submit" class="btn btn-outline-warning btn-sm w-100">
+                <i class="bi bi-send me-1"></i>Märgi saadetud
+              </button>
+            </form>
+            {% elif invoice.status == 'saadetud' %}
+            <form method="POST" action="{{ url_for('invoices.change_status', invoice_id=invoice.id, new_status='makstud') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <button type="submit" class="btn btn-outline-success btn-sm w-100">
+                <i class="bi bi-check-circle me-1"></i>Märgi makstud
+              </button>
+            </form>
+            {% elif invoice.status == 'tähtaeg ületatud' %}
+            <form method="POST" action="{{ url_for('invoices.change_status', invoice_id=invoice.id, new_status='makstud') }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+              <button type="submit" class="btn btn-outline-success btn-sm w-100">
+                <i class="bi bi-check-circle me-1"></i>Märgi makstud
+              </button>
+            </form>
+            {% endif %}
+            
+            <!-- Other Actions -->
+            <a href="{{ url_for('invoices.new_invoice') }}?client_id={{ invoice.client_id }}" 
+               class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-plus-lg me-1"></i>Uus arve samale kliendile
+            </a>
+            
+            <a href="{{ url_for('clients.view_client', client_id=invoice.client_id) }}" 
+               class="btn btn-outline-secondary btn-sm">
+              <i class="bi bi-person me-1"></i>Vaata klienti
+            </a>
+            
+            {% if invoice.status != 'makstud' %}
+            <hr class="my-2">
+            <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="confirmDelete()">
+              <i class="bi bi-trash me-1"></i>Kustuta arve
+            </button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Delete Confirmation Modal -->
+{% if invoice.status != 'makstud' %}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kustuta arve</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-2">Kas oled kindel, et soovid kustutada arve "<strong>{{ invoice.number }}</strong>"?</p>
+        <small class="text-muted">Seda toimingut ei saa tagasi võtta.</small>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tühista</button>
+        <form method="POST" action="{{ url_for('invoices.delete_invoice', invoice_id=invoice.id) }}" style="display: inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash me-1"></i>Kustuta arve
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Delete confirmation
+{% if invoice.status != 'makstud' %}
+function confirmDelete() {
+  new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+{% endif %}
+
+// Auto-dismiss alerts
+document.addEventListener('DOMContentLoaded', function() {
+  const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
+  alerts.forEach(alert => {
+    setTimeout(() => {
+      if (bootstrap && bootstrap.Alert) {
+        const bsAlert = new bootstrap.Alert(alert);
+        bsAlert.close();
+      }
+    }, 5000);
+  });
+});
+</script>
+{% endblock %}

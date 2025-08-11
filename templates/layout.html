@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="et">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Billipocket{% endblock %}</title>
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="{{ url_for('static', filename='css/billipocket.css') }}" rel="stylesheet">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <div class="bp-app">
+    <aside class="bp-sidebar d-none d-lg-block">
+      <div class="bp-brand">
+        <div class="bp-brand-badge">B</div>
+        <div>
+          <div class="fw-bold">Billipocket</div>
+          <div class="small">Kerge arvehaldussüsteem</div>
+        </div>
+      </div>
+      <nav class="bp-nav p-3">
+        <div class="text-uppercase small mb-2">Menüü</div>
+        <ul class="nav flex-column gap-1">
+          <li class="nav-item"><a class="nav-link {% if request.endpoint=='dashboard.overview' %}active{% endif %}" href="{{ url_for('dashboard.overview') }}">Ülevaade</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.endpoint and request.endpoint.startswith('invoices') %}active{% endif %}" href="{{ url_for('invoices.invoices') }}">Arved</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.endpoint and request.endpoint.startswith('clients') %}active{% endif %}" href="{{ url_for('clients.clients') }}">Kliendid</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.endpoint=='dashboard.reports' %}active{% endif %}" href="{{ url_for('dashboard.reports') }}">Aruanded</a></li>
+          <li class="nav-item"><a class="nav-link {% if request.endpoint=='dashboard.settings' %}active{% endif %}" href="{{ url_for('dashboard.settings') }}">Seaded</a></li>
+        </ul>
+      </nav>
+      <div class="mt-auto p-3 small">
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge text-bg-light text-dark">v1.0</span>
+          <span>© Billipocket</span>
+        </div>
+      </div>
+    </aside>
+
+    <header class="bp-topbar">
+      <div class="container-fluid py-2">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-soft d-lg-none" data-bs-toggle="offcanvas" data-bs-target="#bpOffcanvas" aria-controls="bpOffcanvas">☰</button>
+          <form class="d-none d-md-flex flex-grow-1" role="search">
+            <input class="form-control" type="search" placeholder="Otsi arvet või klienti…" />
+          </form>
+          <div class="ms-auto d-flex align-items-center gap-2">
+            <a class="btn btn-primary" href="{{ url_for('invoices.new_invoice') }}">Loo arve</a>
+            <a class="btn btn-outline-secondary" href="{{ url_for('clients.new_client') }}">Lisa klient</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="bp-main">
+      <div class="container-fluid">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages mb-4">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                  {% if category == 'success' %}
+                    <i class="bi bi-check-circle me-2"></i>
+                  {% elif category == 'warning' %}
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                  {% elif category == 'danger' or category == 'error' %}
+                    <i class="bi bi-x-circle me-2"></i>
+                  {% else %}
+                    <i class="bi bi-info-circle me-2"></i>
+                  {% endif %}
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Sulge"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+
+    <div class="offcanvas offcanvas-start bp-offcanvas" tabindex="-1" id="bpOffcanvas">
+      <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Billipocket</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+      </div>
+      <div class="offcanvas-body">
+        <ul class="nav flex-column gap-1">
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard.overview') }}">Ülevaade</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('invoices.invoices') }}">Arved</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('clients.clients') }}">Kliendid</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard.reports') }}">Aruanded</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('dashboard.settings') }}">Seaded</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="{{ url_for('static', filename='js/billipocket.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

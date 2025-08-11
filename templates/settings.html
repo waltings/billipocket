@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% block title %}Seaded – Billipocket{% endblock %}
+{% block content %}
+<div class="bp-card rounded-2xl shadow-soft">
+  <div class="bp-card-header"><h2 class="h6 m-0">Seaded</h2></div>
+  <div class="bp-card-body">
+    <form class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label" for="company">Ettevõtte nimi</label>
+        <input id="company" class="form-control" placeholder="Minu Ettevõte OÜ" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="vat">KM määr (%)</label>
+        <input id="vat" class="form-control" type="number" step="0.1" placeholder="22" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="addr">Aadress</label>
+        <input id="addr" class="form-control" placeholder="Tänav 1, Linn" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="logo">Logo (URL)</label>
+        <input id="logo" class="form-control" placeholder="https://…" />
+      </div>
+      <div class="col-12 d-flex gap-2">
+        <button class="btn btn-primary" type="button">Salvesta seaded</button>
+        <button class="btn btn-outline-secondary" type="button">Varunda andmed</button>
+        <button class="btn btn-outline-secondary" type="button">Taasta</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

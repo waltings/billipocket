@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Arve {{ invoice.number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #2c3e50;
+            margin: 0;
+            padding: 0;
+            background-color: white;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            margin: -15mm -15mm 30px -15mm;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .company-name {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+        
+        .company-tagline {
+            font-size: 13px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .invoice-title-section {
+            text-align: right;
+        }
+        
+        .invoice-title {
+            font-size: 32px;
+            font-weight: 100;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+        
+        .invoice-number {
+            font-size: 18px;
+            font-weight: 300;
+            margin-top: 5px;
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .main-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .left-column {
+            flex: 2;
+        }
+        
+        .right-column {
+            flex: 1;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .client-card {
+            background: #f8f9ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 25px;
+        }
+        
+        .client-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .client-detail {
+            margin-bottom: 5px;
+            color: #5a6c7d;
+        }
+        
+        .invoice-meta-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .meta-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .meta-label {
+            font-weight: 500;
+            color: #5a6c7d;
+        }
+        
+        .meta-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .status-mustand { background: #ffeaa7; color: #fdcb6e; }
+        .status-saadetud { background: #74b9ff; color: white; }
+        .status-makstud { background: #00b894; color: white; }
+        .status-overdue { background: #e17055; color: white; }
+        
+        .items-container {
+            margin: 30px 0;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .items-table thead {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .items-table th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 10px;
+        }
+        
+        .items-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .items-table tbody tr:hover {
+            background-color: #fafbfc;
+        }
+        
+        .items-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .qty-col, .price-col, .total-col {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+        }
+        
+        .totals-section {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+        
+        .totals-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            min-width: 280px;
+        }
+        
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 20px;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .totals-row:last-child {
+            border-bottom: none;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .totals-label {
+            font-weight: 500;
+        }
+        
+        .totals-amount {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .payment-section {
+            background: #f8f9ff;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .payment-section h4 {
+            margin: 0 0 15px 0;
+            color: #667eea;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .reference-number {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: inline-block;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #667eea;
+            border: 1px solid #e9ecef;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            font-size: 10px;
+            color: #95a5a6;
+        }
+        
+        .footer-accent {
+            color: #667eea;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-info">
+            <div class="company-name">BilliPocket</div>
+            <div class="company-tagline">Modern Invoicing Solutions</div>
+        </div>
+        <div class="invoice-title-section">
+            <div class="invoice-title">INVOICE</div>
+            <div class="invoice-number">{{ invoice.number }}</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="left-column">
+            <div class="section-title">Bill To</div>
+            <div class="client-card">
+                <div class="client-name">{{ invoice.client.name }}</div>
+                {% if invoice.client.registry_code %}<div class="client-detail">Registry: {{ invoice.client.registry_code }}</div>{% endif %}
+                {% if invoice.client.address %}<div class="client-detail">{{ invoice.client.address }}</div>{% endif %}
+                {% if invoice.client.email %}<div class="client-detail">{{ invoice.client.email }}</div>{% endif %}
+                {% if invoice.client.phone %}<div class="client-detail">{{ invoice.client.phone }}</div>{% endif %}
+            </div>
+        </div>
+        
+        <div class="right-column">
+            <div class="section-title">Invoice Details</div>
+            <div class="invoice-meta-card">
+                <div class="meta-row">
+                    <span class="meta-label">Date:</span>
+                    <span class="meta-value">{{ invoice.date.strftime('%d.%m.%Y') }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Due Date:</span>
+                    <span class="meta-value">{{ invoice.due_date.strftime('%d.%m.%Y') }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Status:</span>
+                    <span class="status-badge 
+                        {% if invoice.status == 'mustand' %}status-mustand
+                        {% elif invoice.status == 'saadetud' %}status-saadetud
+                        {% elif invoice.status == 'makstud' %}status-makstud
+                        {% elif invoice.status == 'tähtaeg ületatud' %}status-overdue
+                        {% endif %}">
+                        {% if invoice.status == 'mustand' %}Draft
+                        {% elif invoice.status == 'saadetud' %}Sent
+                        {% elif invoice.status == 'makstud' %}Paid
+                        {% elif invoice.status == 'tähtaeg ületatud' %}Overdue
+                        {% else %}{{ invoice.status }}{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="items-container">
+        <div class="section-title">Services & Products</div>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Description</th>
+                    <th class="qty-col" style="width: 15%;">Qty</th>
+                    <th class="price-col" style="width: 17.5%;">Unit Price</th>
+                    <th class="total-col" style="width: 17.5%;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for line in invoice.lines %}
+                <tr>
+                    <td>{{ line.description }}</td>
+                    <td class="qty-col">{{ "%.2f"|format(line.qty|float) }}</td>
+                    <td class="price-col">€{{ "%.2f"|format(line.unit_price|float) }}</td>
+                    <td class="total-col">€{{ "%.2f"|format(line.line_total|float) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="totals-section">
+        <div class="totals-card">
+            <div class="totals-row">
+                <span class="totals-label">Subtotal:</span>
+                <span class="totals-amount">€{{ "%.2f"|format(invoice.subtotal|float) }}</span>
+            </div>
+            <div class="totals-row">
+                <span class="totals-label">VAT ({{ invoice.vat_rate }}%):</span>
+                <span class="totals-amount">€{{ "%.2f"|format(invoice.vat_amount|float) }}</span>
+            </div>
+            <div class="totals-row">
+                <span class="totals-label">TOTAL:</span>
+                <span class="totals-amount">€{{ "%.2f"|format(invoice.total|float) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="payment-section">
+        <h4>Payment Information</h4>
+        <p>Please transfer the invoice amount by the due date using bank transfer.</p>
+        <p><strong>Reference Number:</strong>
+        <div class="reference-number">{{ invoice.number.replace('-', '') }}</div></p>
+    </div>
+
+    <div class="footer">
+        <p>Thank you for your business! Contact us if you have any questions.</p>
+        <p>This invoice was generated with <span class="footer-accent">BilliPocket</span> on {{ today.strftime('%d.%m.%Y') }}.</p>
+    </div>
+</body>
+</html>

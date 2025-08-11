@@ -1,0 +1,496 @@
+{% extends 'layout.html' %}
+{% block title %}Arved – Billipocket{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+{% endblock %}
+
+{% block content %}
+<section id="invoices" class="mb-4">
+  <!-- Page Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="h3 mb-1">Arved</h1>
+      <p class="text-muted mb-0">Halda oma arveid ja jälgi maksestaatuseid</p>
+    </div>
+    <a href="{{ url_for('invoices.new_invoice') }}" class="btn btn-primary">
+      <i class="bi bi-plus-lg me-1"></i>Loo uus arve
+    </a>
+  </div>
+
+  <!-- Invoice Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3 col-6">
+      <div class="bp-card text-center">
+        <div class="bp-card-body py-3">
+          <div class="h4 mb-1 text-primary">{{ invoices|length }}</div>
+          <div class="small text-muted">Kokku arveid</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="bp-card text-center">
+        <div class="bp-card-body py-3">
+          <div class="h4 mb-1 text-success">{{ invoices|selectattr('status', 'equalto', 'makstud')|list|length }}</div>
+          <div class="small text-muted">Makstud</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="bp-card text-center">
+        <div class="bp-card-body py-3">
+          <div class="h4 mb-1 text-warning">{{ invoices|selectattr('status', 'equalto', 'saadetud')|list|length }}</div>
+          <div class="small text-muted">Saadetud</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-6">
+      <div class="bp-card text-center">
+        <div class="bp-card-body py-3">
+          <div class="h4 mb-1 text-danger">{{ invoices|selectattr('status', 'equalto', 'tähtaeg ületatud')|list|length }}</div>
+          <div class="small text-muted">Tähtaeg ületatud</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="bp-card mb-4">
+    <div class="bp-card-body">
+      <form method="GET" class="row g-3">
+        {{ search_form.hidden_tag() }}
+        <div class="col-md-3">
+          <label for="{{ search_form.status.id }}" class="form-label">Staatus</label>
+          {{ search_form.status(class_="form-select") }}
+        </div>
+        <div class="col-md-3">
+          <label for="{{ search_form.client_id.id }}" class="form-label">Klient</label>
+          {{ search_form.client_id(class_="form-select") }}
+        </div>
+        <div class="col-md-2">
+          <label for="{{ search_form.date_from.id }}" class="form-label">Alates</label>
+          {{ search_form.date_from(class_="form-control") }}
+        </div>
+        <div class="col-md-2">
+          <label for="{{ search_form.date_to.id }}" class="form-label">Kuni</label>
+          {{ search_form.date_to(class_="form-control") }}
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <div class="d-flex gap-2 w-100">
+            <button type="submit" class="btn btn-outline-primary flex-fill">
+              <i class="bi bi-search"></i>
+            </button>
+            <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-secondary">
+              <i class="bi bi-arrow-clockwise"></i>
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Invoices Table -->
+  <div class="bp-card">
+    <div class="bp-card-header d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <h2 class="h6 m-0">Arvete nimekiri</h2>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary btn-sm" onclick="window.print()">
+          <i class="bi bi-printer me-1"></i>Prindi
+        </button>
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+            <i class="bi bi-download me-1"></i>Eksport
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" onclick="exportToCSV()"><i class="bi bi-file-earmark-text me-2"></i>CSV fail</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="bp-card-body p-0">
+      {% if invoices %}
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="border-0">Arve number</th>
+              <th class="border-0">Kuupäev</th>
+              <th class="border-0">Tähtaeg</th>
+              <th class="border-0">Klient</th>
+              <th class="border-0 text-end">Summa</th>
+              <th class="border-0 text-center">Staatus</th>
+              <th class="border-0 text-end">Toimingud</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for invoice in invoices %}
+            <tr>
+              <td>
+                <div class="fw-medium">{{ invoice.no }}</div>
+              </td>
+              <td>
+                <small class="text-muted">{{ invoice.date }}</small>
+              </td>
+              <td>
+                <small class="{% if invoice.is_overdue %}text-danger{% else %}text-muted{% endif %}">
+                  {{ invoice.due_date }}
+                  {% if invoice.is_overdue %}
+                  <i class="bi bi-exclamation-triangle ms-1"></i>
+                  {% endif %}
+                </small>
+              </td>
+              <td>
+                <div class="fw-medium">{{ invoice.client }}</div>
+              </td>
+              <td class="text-end">
+                <span class="fw-medium">{{ "%.2f"|format(invoice.total) }}€</span>
+              </td>
+              <td class="text-center">
+                {% if invoice.status == 'makstud' %}
+                <span class="badge bg-success">Makstud</span>
+                {% elif invoice.status == 'saadetud' %}
+                <span class="badge bg-primary">Saadetud</span>
+                {% elif invoice.status == 'mustand' %}
+                <span class="badge bg-secondary">Mustand</span>
+                {% elif invoice.status == 'tähtaeg ületatud' %}
+                <span class="badge bg-danger">Tähtaeg ületatud</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <div class="btn-group btn-group-sm" role="group">
+                  <a href="{{ url_for('invoices.view_invoice', invoice_id=invoice.id) }}" 
+                     class="btn btn-outline-primary" 
+                     title="Vaata arvet">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                  
+                  {% if invoice.status != 'makstud' %}
+                  <a href="{{ url_for('invoices.edit_invoice', invoice_id=invoice.id) }}" 
+                     class="btn btn-outline-secondary" 
+                     title="Muuda arvet">
+                    <i class="bi bi-pencil"></i>
+                  </a>
+                  {% endif %}
+                  
+                  <div class="dropdown">
+                    <button class="btn btn-outline-info dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown" title="PDF laadi alla">
+                      <i class="bi bi-file-earmark-pdf"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" target="_blank">Standard PDF</a></li>
+                      <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='modern') }}" target="_blank">Modern PDF</a></li>
+                      <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='elegant') }}" target="_blank">Elegant PDF</a></li>
+                    </ul>
+                  </div>
+                  
+                  {% if invoice.status != 'makstud' %}
+                  <div class="dropdown">
+                    <button class="btn btn-outline-success dropdown-toggle" type="button" 
+                            data-bs-toggle="dropdown" title="Muuda staatust">
+                      <i class="bi bi-check-circle"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                      {% if invoice.status != 'saadetud' %}
+                      <li><a class="dropdown-item" href="#" onclick="changeStatus({{ invoice.id }}, 'saadetud')">Märgi saadetud</a></li>
+                      {% endif %}
+                      {% if invoice.status != 'makstud' %}
+                      <li><a class="dropdown-item" href="#" onclick="changeStatus({{ invoice.id }}, 'makstud')">Märgi makstud</a></li>
+                      {% endif %}
+                    </ul>
+                  </div>
+                  {% endif %}
+                  
+                  <button type="button" class="btn btn-outline-info" 
+                          onclick="emailInvoice({{ invoice.id }}, '{{ invoice.no }}', '{{ invoice.client }}')" 
+                          title="Saada e-mailiga">
+                    <i class="bi bi-envelope"></i>
+                  </button>
+                  
+                  <button type="button" class="btn btn-outline-warning" 
+                          onclick="duplicateInvoice({{ invoice.id }}, '{{ invoice.no }}')" 
+                          title="Dubleeri arve">
+                    <i class="bi bi-copy"></i>
+                  </button>
+                  
+                  {% if invoice.status != 'makstud' %}
+                  <button type="button" class="btn btn-outline-danger" 
+                          onclick="deleteInvoice({{ invoice.id }}, '{{ invoice.no }}')" 
+                          title="Kustuta arve">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                  {% endif %}
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="text-center py-5">
+        <div class="mb-3">
+          <i class="bi bi-file-earmark-text display-1 text-muted"></i>
+        </div>
+        <h5 class="text-muted mb-2">Arveid ei leitud</h5>
+        <p class="text-muted mb-3">Lisa esimene arve, et alustada arveldamist.</p>
+        <a href="{{ url_for('invoices.new_invoice') }}" class="btn btn-primary">
+          <i class="bi bi-plus-lg me-1"></i>Loo esimene arve
+        </a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Status Change Confirmation Modal -->
+<div class="modal fade" id="statusModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="statusModalTitle">Muuda staatust</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="statusModalBody">
+        <!-- Dynamic content -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tühista</button>
+        <button type="button" class="btn btn-primary" id="statusConfirmButton">Kinnita</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Email Confirmation Modal -->
+<div class="modal fade" id="emailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Saada arve e-mailiga</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="emailModalBody">
+        <!-- Dynamic content -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tühista</button>
+        <button type="button" class="btn btn-primary" id="emailConfirmButton">Saada arve</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Duplicate Confirmation Modal -->
+<div class="modal fade" id="duplicateModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Dubleeri arve</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="duplicateModalBody">
+        <!-- Dynamic content -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tühista</button>
+        <button type="button" class="btn btn-warning" id="duplicateConfirmButton">Dubleeri arve</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Kustuta arve</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="deleteModalBody">
+        <!-- Dynamic content -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tühista</button>
+        <button type="button" class="btn btn-danger" id="deleteConfirmButton">Kustuta arve</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize auto-submit filters on page load
+
+// Change status function
+function changeStatus(invoiceId, newStatus) {
+  const statusLabels = {
+    'saadetud': 'saadetud',
+    'makstud': 'makstud'
+  };
+  
+  const statusDescriptions = {
+    'saadetud': 'Märkida arve saadetuks?',
+    'makstud': 'Märkida arve makstud?'
+  };
+  
+  document.getElementById('statusModalTitle').textContent = `Märgi arve ${statusLabels[newStatus]}`;
+  document.getElementById('statusModalBody').innerHTML = `<p class="mb-0">${statusDescriptions[newStatus]}</p>`;
+  
+  document.getElementById('statusConfirmButton').onclick = function() {
+    // Create form and submit status change request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/invoices/${invoiceId}/status/${newStatus}`;
+    
+    const csrfToken = document.querySelector('meta[name=csrf-token]');
+    if (csrfToken) {
+      const csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrf_token';
+      csrfInput.value = csrfToken.getAttribute('content');
+      form.appendChild(csrfInput);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+  };
+  
+  new bootstrap.Modal(document.getElementById('statusModal')).show();
+}
+
+// Email invoice function
+function emailInvoice(invoiceId, invoiceNumber, clientName) {
+  document.getElementById('emailModalBody').innerHTML = `
+    <p class="mb-2">Kas soovid saata arvet "<strong>${invoiceNumber}</strong>" kliendile <strong>${clientName}</strong>?</p>
+    <small class="text-muted">Arve saadetakse kliendi e-maili aadressile PDF-failina.</small>
+  `;
+  
+  document.getElementById('emailConfirmButton').onclick = function() {
+    // Create form and submit email request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/invoices/${invoiceId}/email`;
+    
+    const csrfToken = document.querySelector('meta[name=csrf-token]');
+    if (csrfToken) {
+      const csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrf_token';
+      csrfInput.value = csrfToken.getAttribute('content');
+      form.appendChild(csrfInput);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+  };
+  
+  new bootstrap.Modal(document.getElementById('emailModal')).show();
+}
+
+// Duplicate invoice function
+function duplicateInvoice(invoiceId, invoiceNumber) {
+  document.getElementById('duplicateModalBody').innerHTML = `
+    <p class="mb-2">Kas soovid dubleerida arvet "<strong>${invoiceNumber}</strong>"?</p>
+    <small class="text-muted">Luuakse uus arve mustandina tänase kuupäevaga ja uue numbriga.</small>
+  `;
+  
+  document.getElementById('duplicateConfirmButton').onclick = function() {
+    // Create form and submit duplicate request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/invoices/${invoiceId}/duplicate`;
+    
+    const csrfToken = document.querySelector('meta[name=csrf-token]');
+    if (csrfToken) {
+      const csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrf_token';
+      csrfInput.value = csrfToken.getAttribute('content');
+      form.appendChild(csrfInput);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+  };
+  
+  new bootstrap.Modal(document.getElementById('duplicateModal')).show();
+}
+
+// Delete invoice function
+function deleteInvoice(invoiceId, invoiceNumber) {
+  document.getElementById('deleteModalBody').innerHTML = `
+    <p class="mb-2">Kas oled kindel, et soovid kustutada arve "<strong>${invoiceNumber}</strong>"?</p>
+    <small class="text-muted">Seda toimingut ei saa tagasi võtta.</small>
+  `;
+  
+  document.getElementById('deleteConfirmButton').onclick = function() {
+    // Create form and submit delete request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/invoices/${invoiceId}/delete`;
+    
+    const csrfToken = document.querySelector('meta[name=csrf-token]');
+    if (csrfToken) {
+      const csrfInput = document.createElement('input');
+      csrfInput.type = 'hidden';
+      csrfInput.name = 'csrf_token';
+      csrfInput.value = csrfToken.getAttribute('content');
+      form.appendChild(csrfInput);
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+  };
+  
+  new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+// Export to CSV function
+function exportToCSV() {
+  const table = document.querySelector('.table');
+  const rows = Array.from(table.querySelectorAll('tr'));
+  
+  const csvContent = rows.map(row => {
+    const cells = Array.from(row.querySelectorAll('th, td'));
+    return cells.map(cell => {
+      // Remove action buttons and get clean text
+      const clone = cell.cloneNode(true);
+      const buttons = clone.querySelectorAll('button, .btn-group, .dropdown');
+      buttons.forEach(btn => btn.remove());
+      return '"' + clone.textContent.trim().replace(/"/g, '""') + '"';
+    }).join(',');
+  }).join('\n');
+  
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'arved.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+// Auto-submit filters on change
+document.addEventListener('DOMContentLoaded', function() {
+  const statusSelect = document.querySelector('select[name="status"]');
+  const clientSelect = document.querySelector('select[name="client_id"]');
+  
+  if (statusSelect) {
+    statusSelect.addEventListener('change', function() {
+      this.form.submit();
+    });
+  }
+  
+  if (clientSelect) {
+    clientSelect.addEventListener('change', function() {
+      this.form.submit();
+    });
+  }
+});
+</script>
+{% endblock %}

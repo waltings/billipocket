@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Arve {{ invoice.number }}</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        
+        .company-info {
+            flex: 1;
+        }
+        
+        .invoice-info {
+            flex: 1;
+            text-align: right;
+        }
+        
+        .company-name {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .invoice-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .client-info {
+            margin-bottom: 30px;
+        }
+        
+        .client-label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .client-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .invoice-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        
+        .invoice-meta {
+            flex: 1;
+        }
+        
+        .invoice-meta table {
+            width: 100%;
+        }
+        
+        .invoice-meta td {
+            padding: 5px 0;
+        }
+        
+        .invoice-meta .label {
+            font-weight: bold;
+            width: 120px;
+        }
+        
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .items-table th,
+        .items-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        
+        .items-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .items-table .qty-col,
+        .items-table .price-col,
+        .items-table .total-col {
+            text-align: right;
+            width: 80px;
+        }
+        
+        .items-table .description-col {
+            width: auto;
+        }
+        
+        .totals-section {
+            float: right;
+            width: 250px;
+            margin-top: 20px;
+        }
+        
+        .totals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .totals-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .totals-table .label {
+            font-weight: bold;
+            text-align: left;
+        }
+        
+        .totals-table .amount {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .total-final {
+            background-color: #f8f9fa;
+            border-top: 2px solid #333 !important;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .footer {
+            clear: both;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .payment-info {
+            margin-top: 30px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        
+        .payment-info h4 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-info">
+            <div class="company-name">BilliPocket</div>
+            <div>Invoicing Made Simple</div>
+            <div>contact@billipocket.ee</div>
+            <div>+372 5555 0000</div>
+        </div>
+        <div class="invoice-info">
+            <div class="invoice-title">ARVE</div>
+            <div style="font-size: 16px; font-weight: bold;">{{ invoice.number }}</div>
+        </div>
+    </div>
+
+    <div class="client-info">
+        <div class="client-label">Maksja:</div>
+        <div class="client-details">
+            <strong>{{ invoice.client.name }}</strong><br>
+            {% if invoice.client.registry_code %}Registrikood: {{ invoice.client.registry_code }}<br>{% endif %}
+            {% if invoice.client.address %}{{ invoice.client.address }}<br>{% endif %}
+            {% if invoice.client.email %}E-post: {{ invoice.client.email }}<br>{% endif %}
+            {% if invoice.client.phone %}Telefon: {{ invoice.client.phone }}{% endif %}
+        </div>
+    </div>
+
+    <div class="invoice-details">
+        <div class="invoice-meta">
+            <table>
+                <tr>
+                    <td class="label">Arve kuupäev:</td>
+                    <td>{{ invoice.date.strftime('%d.%m.%Y') }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Maksetähtaeg:</td>
+                    <td>{{ invoice.due_date.strftime('%d.%m.%Y') }}</td>
+                </tr>
+                <tr>
+                    <td class="label">Staatus:</td>
+                    <td>
+                        {% if invoice.status == 'mustand' %}Mustand
+                        {% elif invoice.status == 'saadetud' %}Saadetud
+                        {% elif invoice.status == 'makstud' %}Makstud
+                        {% elif invoice.status == 'tähtaeg ületatud' %}Tähtaeg ületatud
+                        {% else %}{{ invoice.status }}{% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th class="description-col">Kirjeldus</th>
+                <th class="qty-col">Kogus</th>
+                <th class="price-col">Ühiku hind (€)</th>
+                <th class="total-col">Kokku (€)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for line in invoice.lines %}
+            <tr>
+                <td>{{ line.description }}</td>
+                <td class="qty-col">{{ "%.2f"|format(line.qty|float) }}</td>
+                <td class="price-col">{{ "%.2f"|format(line.unit_price|float) }}</td>
+                <td class="total-col">{{ "%.2f"|format(line.line_total|float) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="clearfix">
+        <div class="totals-section">
+            <table class="totals-table">
+                <tr>
+                    <td class="label">Vahesumma:</td>
+                    <td class="amount">{{ "%.2f"|format(invoice.subtotal|float) }} €</td>
+                </tr>
+                <tr>
+                    <td class="label">KM ({{ invoice.vat_rate }}%):</td>
+                    <td class="amount">{{ "%.2f"|format(invoice.vat_amount|float) }} €</td>
+                </tr>
+                <tr class="total-final">
+                    <td class="label">KOKKU:</td>
+                    <td class="amount">{{ "%.2f"|format(invoice.total|float) }} €</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="payment-info">
+        <h4>Makseinfo</h4>
+        <p>Palun tasuge arve summa maksetähtajaks pangaülekandega.</p>
+        <p><strong>Viitenumber:</strong> {{ invoice.number.replace('-', '') }}</p>
+    </div>
+
+    <div class="footer">
+        <p>Täname teid koostöö eest! Küsimuste korral võtke meiega ühendust.</p>
+        <p>See arve on genereeritud BilliPocket süsteemiga {{ today.strftime('%d.%m.%Y') }}.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,116 @@
+{% extends 'layout.html' %}
+{% block title %}Lehte ei leitud – Billipocket{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+.error-page {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.error-illustration {
+  max-width: 300px;
+  opacity: 0.8;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="error-page">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-6">
+        <div class="error-illustration mb-4">
+          <i class="bi bi-file-earmark-x display-1 text-muted mb-3"></i>
+          <div class="display-1 fw-bold text-primary mb-2">404</div>
+        </div>
+        
+        <h1 class="h2 mb-3">Lehte ei leitud</h1>
+        <p class="text-muted mb-4 fs-5">
+          Kahjuks ei suutnud me leida lehte, mida otsite. 
+          Võimalik, et link on vigane või leht on kustutatud.
+        </p>
+        
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center mb-5">
+          <a href="{{ url_for('dashboard.overview') }}" class="btn btn-primary">
+            <i class="bi bi-house me-2"></i>Tagasi avalehele
+          </a>
+          <a href="{{ url_for('invoices.invoices') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-file-earmark-text me-2"></i>Vaata arveid
+          </a>
+          <a href="{{ url_for('clients.clients') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-people me-2"></i>Vaata kliente
+          </a>
+        </div>
+
+        <!-- Helpful Links -->
+        <div class="bp-card">
+          <div class="bp-card-header">
+            <h3 class="h6 m-0">
+              <i class="bi bi-compass me-2"></i>Kasulikud lingid
+            </h3>
+          </div>
+          <div class="bp-card-body">
+            <div class="row g-3 text-start">
+              <div class="col-md-6">
+                <h6 class="fw-medium">
+                  <i class="bi bi-plus-circle me-2 text-primary"></i>Loo uut sisu
+                </h6>
+                <ul class="list-unstyled ms-4 small">
+                  <li><a href="{{ url_for('invoices.new_invoice') }}" class="text-decoration-none">Uus arve</a></li>
+                  <li><a href="{{ url_for('clients.new_client') }}" class="text-decoration-none">Uus klient</a></li>
+                </ul>
+              </div>
+              <div class="col-md-6">
+                <h6 class="fw-medium">
+                  <i class="bi bi-search me-2 text-success"></i>Otsi sisu
+                </h6>
+                <ul class="list-unstyled ms-4 small">
+                  <li><a href="{{ url_for('invoices.invoices') }}" class="text-decoration-none">Kõik arved</a></li>
+                  <li><a href="{{ url_for('clients.clients') }}" class="text-decoration-none">Kõik kliendid</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Track 404 errors for analytics (if needed)
+console.log('404 Error:', window.location.href);
+
+// Auto-redirect to home after 30 seconds if user is inactive
+let redirectTimer;
+let userActive = true;
+
+function resetTimer() {
+  clearTimeout(redirectTimer);
+  userActive = true;
+  redirectTimer = setTimeout(function() {
+    if (!userActive) {
+      window.location.href = '{{ url_for("dashboard.overview") }}';
+    }
+  }, 30000);
+}
+
+// Reset timer on user activity
+document.addEventListener('mousemove', resetTimer);
+document.addEventListener('keypress', resetTimer);
+document.addEventListener('click', resetTimer);
+
+// Mark user as inactive after 25 seconds of no activity
+setTimeout(function() {
+  userActive = false;
+}, 25000);
+
+// Initialize timer
+resetTimer();
+</script>
+{% endblock %}
