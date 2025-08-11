@@ -2,31 +2,316 @@
 {% block title %}Seaded – Billipocket{% endblock %}
 {% block content %}
 <div class="bp-card rounded-2xl shadow-soft">
-  <div class="bp-card-header"><h2 class="h6 m-0">Seaded</h2></div>
+  <div class="bp-card-header"><h2 class="h6 m-0"><i class="bi bi-gear me-2"></i>Ettevõtte seaded</h2></div>
   <div class="bp-card-body">
-    <form class="row g-3">
+    <form method="POST" class="row g-3">
+      {{ form.hidden_tag() }}
+      
+      <!-- Company Name -->
       <div class="col-md-6">
-        <label class="form-label" for="company">Ettevõtte nimi</label>
-        <input id="company" class="form-control" placeholder="Minu Ettevõte OÜ" />
+        <label for="{{ form.company_name.id }}" class="form-label">
+          {{ form.company_name.label.text }} <span class="text-danger">*</span>
+        </label>
+        {{ form.company_name(class_="form-control" + (" is-invalid" if form.company_name.errors else "")) }}
+        {% if form.company_name.errors %}
+        <div class="invalid-feedback">
+          {{ form.company_name.errors[0] }}
+        </div>
+        {% endif %}
       </div>
+      
+      <!-- Default VAT Rate -->
       <div class="col-md-6">
-        <label class="form-label" for="vat">KM määr (%)</label>
-        <input id="vat" class="form-control" type="number" step="0.1" placeholder="22" />
+        <label for="{{ form.default_vat_rate.id }}" class="form-label">
+          {{ form.default_vat_rate.label.text }} <span class="text-danger">*</span>
+        </label>
+        {{ form.default_vat_rate(class_="form-control" + (" is-invalid" if form.default_vat_rate.errors else ""), step="0.01") }}
+        {% if form.default_vat_rate.errors %}
+        <div class="invalid-feedback">
+          {{ form.default_vat_rate.errors[0] }}
+        </div>
+        {% endif %}
       </div>
+      
+      <!-- Default PDF Template -->
       <div class="col-md-6">
-        <label class="form-label" for="addr">Aadress</label>
-        <input id="addr" class="form-control" placeholder="Tänav 1, Linn" />
+        <label for="{{ form.default_pdf_template.id }}" class="form-label">
+          {{ form.default_pdf_template.label.text }} <span class="text-danger">*</span>
+        </label>
+        {{ form.default_pdf_template(class_="form-select" + (" is-invalid" if form.default_pdf_template.errors else "")) }}
+        {% if form.default_pdf_template.errors %}
+        <div class="invalid-feedback">
+          {{ form.default_pdf_template.errors[0] }}
+        </div>
+        {% endif %}
+        <div class="form-text">Valitud mall kasutatakse vaikimisi PDF-ide genereerimisel</div>
       </div>
+      
+      <!-- Registry Code -->
       <div class="col-md-6">
-        <label class="form-label" for="logo">Logo (URL)</label>
-        <input id="logo" class="form-control" placeholder="https://…" />
+        <label for="{{ form.company_registry_code.id }}" class="form-label">
+          {{ form.company_registry_code.label.text }}
+        </label>
+        {{ form.company_registry_code(class_="form-control" + (" is-invalid" if form.company_registry_code.errors else "")) }}
+        {% if form.company_registry_code.errors %}
+        <div class="invalid-feedback">
+          {{ form.company_registry_code.errors[0] }}
+        </div>
+        {% endif %}
       </div>
+      
+      <!-- VAT Number -->
+      <div class="col-md-6">
+        <label for="{{ form.company_vat_number.id }}" class="form-label">
+          {{ form.company_vat_number.label.text }}
+        </label>
+        {{ form.company_vat_number(class_="form-control" + (" is-invalid" if form.company_vat_number.errors else "")) }}
+        {% if form.company_vat_number.errors %}
+        <div class="invalid-feedback">
+          {{ form.company_vat_number.errors[0] }}
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Phone -->
+      <div class="col-md-6">
+        <label for="{{ form.company_phone.id }}" class="form-label">
+          {{ form.company_phone.label.text }}
+        </label>
+        {{ form.company_phone(class_="form-control" + (" is-invalid" if form.company_phone.errors else "")) }}
+        {% if form.company_phone.errors %}
+        <div class="invalid-feedback">
+          {{ form.company_phone.errors[0] }}
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Email -->
+      <div class="col-md-6">
+        <label for="{{ form.company_email.id }}" class="form-label">
+          {{ form.company_email.label.text }}
+        </label>
+        {{ form.company_email(class_="form-control" + (" is-invalid" if form.company_email.errors else ""), type="email") }}
+        {% if form.company_email.errors %}
+        <div class="invalid-feedback">
+          {{ form.company_email.errors[0] }}
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Website -->
+      <div class="col-md-6">
+        <label for="{{ form.company_website.id }}" class="form-label">
+          {{ form.company_website.label.text }}
+        </label>
+        {{ form.company_website(class_="form-control" + (" is-invalid" if form.company_website.errors else ""), placeholder="https://www.example.com") }}
+        {% if form.company_website.errors %}
+        <div class="invalid-feedback">
+          {{ form.company_website.errors[0] }}
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Logo Upload -->
+      <div class="col-12">
+        <label class="form-label">Ettevõtte logo</label>
+        
+        <!-- Drag & Drop Zone -->
+        <div class="bp-logo-upload-zone" id="logoUploadZone">
+          <div class="bp-logo-drop-area" id="logoDropArea">
+            <div class="bp-logo-preview" id="logoPreview" style="display: none;">
+              <img id="logoImage" src="" alt="Logo eelvaade" />
+              <div class="bp-logo-actions">
+                <button type="button" class="btn btn-sm btn-outline-primary" onclick="triggerFileInput()">
+                  <i class="bi bi-pencil me-1"></i>Muuda
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeLogo()">
+                  <i class="bi bi-trash me-1"></i>Eemalda
+                </button>
+              </div>
+            </div>
+            <div class="bp-logo-placeholder" id="logoPlaceholder">
+              <div class="bp-logo-icon">
+                <i class="bi bi-cloud-upload"></i>
+              </div>
+              <h6 class="mt-3 mb-2">Logi pilt</h6>
+              <p class="text-muted mb-3">Lohista fail siia või <button type="button" class="btn-link p-0" onclick="triggerFileInput()">vali fail</button></p>
+              <small class="text-muted">PNG, JPG või SVG. Maksimaalne suurus 2MB</small>
+            </div>
+          </div>
+          <input type="file" id="logoFileInput" accept="image/*" style="display: none;" />
+        </div>
+        
+        <!-- Hidden URL field for form submission -->
+        {{ form.company_logo_url(class_="d-none", id="logoUrlField") }}
+        {% if form.company_logo_url.errors %}
+        <div class="invalid-feedback d-block">
+          {{ form.company_logo_url.errors[0] }}
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Address -->
+      <div class="col-12">
+        <label for="{{ form.company_address.id }}" class="form-label">
+          {{ form.company_address.label.text }}
+        </label>
+        {{ form.company_address(class_="form-control" + (" is-invalid" if form.company_address.errors else ""), rows="3") }}
+        {% if form.company_address.errors %}
+        <div class="invalid-feedback">
+          {{ form.company_address.errors[0] }}
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Invoice Terms -->
+      <div class="col-12">
+        <label for="{{ form.invoice_terms.id }}" class="form-label">
+          {{ form.invoice_terms.label.text }}
+        </label>
+        {{ form.invoice_terms(class_="form-control" + (" is-invalid" if form.invoice_terms.errors else ""), rows="4", placeholder="Maksetähtaeg 14 päeva arvest kuupäevast...") }}
+        {% if form.invoice_terms.errors %}
+        <div class="invalid-feedback">
+          {{ form.invoice_terms.errors[0] }}
+        </div>
+        {% endif %}
+      </div>
+      
+      <!-- Action Buttons -->
       <div class="col-12 d-flex gap-2">
-        <button class="btn btn-primary" type="button">Salvesta seaded</button>
-        <button class="btn btn-outline-secondary" type="button">Varunda andmed</button>
-        <button class="btn btn-outline-secondary" type="button">Taasta</button>
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-check-lg me-1"></i>Salvesta seaded
+        </button>
+        <a href="{{ url_for('dashboard.overview') }}" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left me-1"></i>Tagasi
+        </a>
       </div>
     </form>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  initLogoUpload();
+  
+  // Load existing logo if URL is provided
+  const existingLogoUrl = document.getElementById('logoUrlField').value;
+  if (existingLogoUrl && existingLogoUrl.trim()) {
+    showLogoPreview(existingLogoUrl);
+  }
+});
+
+function initLogoUpload() {
+  const dropArea = document.getElementById('logoDropArea');
+  const fileInput = document.getElementById('logoFileInput');
+  const logoUrlField = document.getElementById('logoUrlField');
+  
+  // Prevent default drag behaviors
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+  });
+  
+  // Highlight drop area when item is dragged over it
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, highlight, false);
+  });
+  
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, unhighlight, false);
+  });
+  
+  // Handle dropped files
+  dropArea.addEventListener('drop', handleDrop, false);
+  
+  // Handle file input change
+  fileInput.addEventListener('change', function(e) {
+    if (e.target.files.length > 0) {
+      handleFiles(e.target.files);
+    }
+  });
+  
+  // Handle click on drop area
+  dropArea.addEventListener('click', function(e) {
+    if (e.target.closest('.bp-logo-actions')) return;
+    triggerFileInput();
+  });
+}
+
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+function highlight() {
+  document.getElementById('logoDropArea').classList.add('dragover');
+}
+
+function unhighlight() {
+  document.getElementById('logoDropArea').classList.remove('dragover');
+}
+
+function handleDrop(e) {
+  const dt = e.dataTransfer;
+  const files = dt.files;
+  handleFiles(files);
+}
+
+function handleFiles(files) {
+  if (files.length === 0) return;
+  
+  const file = files[0];
+  
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    BilliPocket.showMessage('Palun valige pildifail (PNG, JPG või SVG)', 'error');
+    return;
+  }
+  
+  // Validate file size (2MB max)
+  if (file.size > 2 * 1024 * 1024) {
+    BilliPocket.showMessage('Faili suurus on liiga suur. Maksimaalne suurus on 2MB', 'error');
+    return;
+  }
+  
+  // Create preview
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    showLogoPreview(e.target.result);
+    
+    // For demo purposes, we'll store the data URL
+    // In production, you'd upload to server and get URL back
+    document.getElementById('logoUrlField').value = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function showLogoPreview(imageSrc) {
+  const logoPreview = document.getElementById('logoPreview');
+  const logoPlaceholder = document.getElementById('logoPlaceholder');
+  const logoImage = document.getElementById('logoImage');
+  
+  logoImage.src = imageSrc;
+  logoPreview.style.display = 'block';
+  logoPlaceholder.style.display = 'none';
+}
+
+function triggerFileInput() {
+  document.getElementById('logoFileInput').click();
+}
+
+function removeLogo() {
+  const logoPreview = document.getElementById('logoPreview');
+  const logoPlaceholder = document.getElementById('logoPlaceholder');
+  const logoUrlField = document.getElementById('logoUrlField');
+  
+  logoPreview.style.display = 'none';
+  logoPlaceholder.style.display = 'block';
+  logoUrlField.value = '';
+  
+  BilliPocket.showMessage('Logo eemaldatud', 'success');
+}
+</script>
 {% endblock %}

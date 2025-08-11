@@ -38,25 +38,45 @@
       </a>
       {% endif %}
       
+      <button type="button" class="btn btn-outline-secondary" onclick="previewPDF('{{ invoice.id }}', 'standard')">
+        <i class="bi bi-eye me-1"></i>Eelvaade
+      </button>
+      
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown">
           <i class="bi bi-file-earmark-pdf me-1"></i>PDF
         </button>
         <ul class="dropdown-menu">
           <li>
-            <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='standard') }}" target="_blank">
+            <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" target="_blank">
               <i class="bi bi-file-earmark me-2"></i>Standard PDF
             </a>
           </li>
           <li>
-            <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='modern') }}" target="_blank">
+            <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='modern') }}" target="_blank">
               <i class="bi bi-file-earmark me-2"></i>Modern PDF
             </a>
           </li>
           <li>
-            <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='elegant') }}" target="_blank">
+            <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='elegant') }}" target="_blank">
               <i class="bi bi-file-earmark me-2"></i>Elegant PDF
             </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <button class="dropdown-item" onclick="previewPDF('{{ invoice.id }}', 'standard')">
+              <i class="bi bi-eye me-2"></i>Eelvaade (Standard)
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" onclick="previewPDF('{{ invoice.id }}', 'modern')">
+              <i class="bi bi-eye me-2"></i>Eelvaade (Modern)
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" onclick="previewPDF('{{ invoice.id }}', 'elegant')">
+              <i class="bi bi-eye me-2"></i>Eelvaade (Elegant)
+            </button>
           </li>
         </ul>
       </div>
@@ -282,6 +302,36 @@
   </div>
 </section>
 
+<!-- PDF Preview Modal -->
+<div class="modal fade" id="pdfPreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-file-earmark-pdf me-2"></i>PDF eelvaade - Arve {{ invoice.number }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div id="pdfPreviewContent" class="d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+          <div class="text-center">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Laen...</span>
+            </div>
+            <p class="mt-2 text-muted">Laadin PDF-i eelvaadet...</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Sulge</button>
+        <a id="pdfDownloadBtn" href="#" class="btn btn-primary" target="_blank">
+          <i class="bi bi-download me-1"></i>Laadi alla
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Delete Confirmation Modal -->
 {% if invoice.status != 'makstud' %}
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
@@ -312,6 +362,52 @@
 
 {% block extra_js %}
 <script>
+// PDF Preview functionality
+function previewPDF(invoiceId, template) {
+  const modal = new bootstrap.Modal(document.getElementById('pdfPreviewModal'));
+  const pdfContent = document.getElementById('pdfPreviewContent');
+  const downloadBtn = document.getElementById('pdfDownloadBtn');
+  
+  // Reset content to loading state
+  pdfContent.innerHTML = `
+    <div class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Laen...</span>
+      </div>
+      <p class="mt-2 text-muted">Laadin PDF-i eelvaadet...</p>
+    </div>
+  `;
+  
+  // Update download button URL
+  const pdfUrl = `/pdf/invoice/${invoiceId}/${template}`;
+  downloadBtn.href = pdfUrl;
+  
+  modal.show();
+  
+  // Load PDF in iframe
+  setTimeout(() => {
+    try {
+      pdfContent.innerHTML = `<iframe src="${pdfUrl}" title="PDF eelvaade"></iframe>`;
+    } catch (error) {
+      showPDFError();
+    }
+  }, 500);
+}
+
+function showPDFError() {
+  const pdfContent = document.getElementById('pdfPreviewContent');
+  pdfContent.innerHTML = `
+    <div class="pdf-error">
+      <i class="bi bi-exclamation-triangle"></i>
+      <h5 class="mb-2">PDF-i ei saanud laadida</h5>
+      <p class="text-muted mb-3">Eelvaade pole saadaval. Proovige faili alla laadida.</p>
+      <button class="btn btn-primary" onclick="document.getElementById('pdfDownloadBtn').click()">
+        <i class="bi bi-download me-1"></i>Laadi alla
+      </button>
+    </div>
+  `;
+}
+
 // Delete confirmation
 {% if invoice.status != 'makstud' %}
 function confirmDelete() {
@@ -330,6 +426,27 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }, 5000);
   });
+  
+  // Handle iframe load errors
+  document.addEventListener('click', function(e) {
+    if (e.target.closest('.dropdown-item') && e.target.closest('.dropdown-item').onclick) {
+      // Close dropdown after clicking preview
+      const dropdown = e.target.closest('.dropdown');
+      if (dropdown) {
+        const dropdownToggle = dropdown.querySelector('[data-bs-toggle="dropdown"]');
+        if (dropdownToggle) {
+          bootstrap.Dropdown.getInstance(dropdownToggle)?.hide();
+        }
+      }
+    }
+  });
 });
+
+// Handle iframe load errors
+window.addEventListener('message', function(e) {
+  if (e.data === 'pdf-load-error') {
+    showPDFError();
+  }
+}, false);
 </script>
 {% endblock %}

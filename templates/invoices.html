@@ -157,23 +157,23 @@
                 {% endif %}
               </td>
               <td class="text-end">
-                <div class="btn-group btn-group-sm" role="group">
+                <div class="bp-invoice-actions d-flex gap-1 justify-content-end" role="group">
                   <a href="{{ url_for('invoices.view_invoice', invoice_id=invoice.id) }}" 
-                     class="btn btn-outline-primary" 
+                     class="btn btn-outline-primary btn-sm bp-action-btn" 
                      title="Vaata arvet">
                     <i class="bi bi-eye"></i>
                   </a>
                   
                   {% if invoice.status != 'makstud' %}
                   <a href="{{ url_for('invoices.edit_invoice', invoice_id=invoice.id) }}" 
-                     class="btn btn-outline-secondary" 
+                     class="btn btn-outline-secondary btn-sm bp-action-btn" 
                      title="Muuda arvet">
                     <i class="bi bi-pencil"></i>
                   </a>
                   {% endif %}
                   
                   <div class="dropdown">
-                    <button class="btn btn-outline-info dropdown-toggle" type="button" 
+                    <button class="btn btn-outline-info btn-sm bp-action-btn dropdown-toggle" type="button" 
                             data-bs-toggle="dropdown" title="PDF laadi alla">
                       <i class="bi bi-file-earmark-pdf"></i>
                     </button>
@@ -186,7 +186,7 @@
                   
                   {% if invoice.status != 'makstud' %}
                   <div class="dropdown">
-                    <button class="btn btn-outline-success dropdown-toggle" type="button" 
+                    <button class="btn btn-outline-success btn-sm bp-action-btn dropdown-toggle" type="button" 
                             data-bs-toggle="dropdown" title="Muuda staatust">
                       <i class="bi bi-check-circle"></i>
                     </button>
@@ -201,20 +201,20 @@
                   </div>
                   {% endif %}
                   
-                  <button type="button" class="btn btn-outline-info" 
+                  <button type="button" class="btn btn-outline-info btn-sm bp-action-btn" 
                           onclick="emailInvoice({{ invoice.id }}, '{{ invoice.no }}', '{{ invoice.client }}')" 
                           title="Saada e-mailiga">
                     <i class="bi bi-envelope"></i>
                   </button>
                   
-                  <button type="button" class="btn btn-outline-warning" 
+                  <button type="button" class="btn btn-outline-warning btn-sm bp-action-btn" 
                           onclick="duplicateInvoice({{ invoice.id }}, '{{ invoice.no }}')" 
                           title="Dubleeri arve">
                     <i class="bi bi-copy"></i>
                   </button>
                   
                   {% if invoice.status != 'makstud' %}
-                  <button type="button" class="btn btn-outline-danger" 
+                  <button type="button" class="btn btn-outline-danger btn-sm bp-action-btn" 
                           onclick="deleteInvoice({{ invoice.id }}, '{{ invoice.no }}')" 
                           title="Kustuta arve">
                     <i class="bi bi-trash"></i>

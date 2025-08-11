@@ -298,10 +298,10 @@
     </div>
 
     <div class="letterhead">
-        <div class="company-name">BilliPocket</div>
+        <div class="company-name">{{ company.company_name or 'BilliPocket' }}</div>
         <div class="company-details">
-            Professional Invoicing Solutions<br>
-            contact@billipocket.ee • +372 5555 0000
+            {{ company.company_website or 'Professional Invoicing Solutions' }}<br>
+            {% if company.company_email %}{{ company.company_email }}{% endif %}{% if company.company_email and company.company_phone %} • {% endif %}{% if company.company_phone %}{{ company.company_phone }}{% endif %}
         </div>
     </div>
 
@@ -382,7 +382,7 @@
     </div>
 
     <div class="footer">
-        <p>Thank you for choosing BilliPocket for your business needs.</p>
+        <p>Thank you for choosing {{ company.company_name or 'BilliPocket' }} for your business needs.</p>
         <p>This invoice was generated on {{ today.strftime('%d %B, %Y') }}.</p>
     </div>
 </body>

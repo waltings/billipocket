@@ -323,6 +323,139 @@ body {
   }
 }
 
+/* Logo Upload Components */
+.bp-logo-upload-zone {
+  margin-bottom: 1rem;
+}
+
+.bp-logo-drop-area {
+  border: 2px dashed var(--bp-primary);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  background: rgba(17, 214, 222, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  min-height: 200px;
+}
+
+.bp-logo-drop-area.dragover {
+  border-color: var(--bp-primary-600);
+  background: rgba(17, 214, 222, 0.1);
+  transform: scale(1.02);
+}
+
+.bp-logo-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.bp-logo-icon {
+  font-size: 3rem;
+  color: var(--bp-primary);
+  margin-bottom: 1rem;
+}
+
+.bp-logo-preview {
+  display: none;
+  position: relative;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.bp-logo-preview img {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.bp-logo-actions {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.bp-logo-preview:hover .bp-logo-actions {
+  opacity: 1;
+}
+
+/* Invoice Action Buttons */
+.bp-invoice-actions {
+  min-width: 280px;
+}
+
+.bp-action-btn {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.bp-action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bp-action-btn i {
+  font-size: 0.85rem;
+}
+
+.bp-action-btn.dropdown-toggle::after {
+  display: none;
+}
+
+/* PDF Preview Modal */
+#pdfPreviewContent iframe {
+  width: 100%;
+  height: 70vh;
+  border: none;
+  border-radius: 8px;
+}
+
+#pdfPreviewContent .pdf-error {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 2rem;
+  text-align: center;
+}
+
+#pdfPreviewContent .pdf-error i {
+  font-size: 3rem;
+  color: var(--bp-danger);
+  margin-bottom: 1rem;
+}
+
+/* Responsive adjustments for invoice actions */
+@media (max-width: 768px) {
+  .bp-invoice-actions {
+    min-width: auto;
+    flex-wrap: wrap;
+    gap: 0.25rem !important;
+  }
+  
+  .bp-action-btn {
+    width: 28px;
+    height: 28px;
+  }
+  
+  .bp-action-btn i {
+    font-size: 0.75rem;
+  }
+}
+
 /* Dark mode support (optional) */
 @media (prefers-color-scheme: dark) {
   .bp-card {
@@ -336,5 +469,14 @@ body {
   
   .table {
     color: #fff;
+  }
+  
+  .bp-logo-drop-area {
+    background: rgba(17, 214, 222, 0.1);
+    border-color: var(--bp-primary);
+  }
+  
+  .bp-logo-drop-area.dragover {
+    background: rgba(17, 214, 222, 0.15);
   }
 }

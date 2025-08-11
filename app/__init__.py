@@ -30,15 +30,19 @@ def create_app(config_name=None):
     # Global context processor for navigation
     @app.context_processor
     def inject_nav():
-        return {
-            "nav": {
-                "overview": url_for('dashboard.overview'),
-                "invoices": url_for('invoices.invoices'),
-                "clients": url_for('clients.clients'),
-                "reports": url_for('dashboard.reports'),
-                "settings": url_for('dashboard.settings'),
+        try:
+            return {
+                "nav": {
+                    "overview": url_for('dashboard.overview'),
+                    "invoices": url_for('invoices.invoices'),
+                    "clients": url_for('clients.clients'),
+                    "reports": url_for('dashboard.reports'),
+                    "settings": url_for('dashboard.settings'),
+                }
             }
-        }
+        except RuntimeError:
+            # Return empty nav when outside request context (e.g., PDF generation)
+            return {"nav": {}}
     
     # Make CSRF token available in templates
     @app.context_processor
@@ -68,7 +72,11 @@ def create_app(config_name=None):
     def seed_data():
         """Seed the database with sample data."""
         with app.app_context():
-            from app.models import Client, Invoice, InvoiceLine
+            from app.models import Client, Invoice, InvoiceLine, VatRate
+            
+            # First ensure VAT rates exist
+            VatRate.create_default_rates()
+            standard_vat = VatRate.get_default_rate()
             
             # Create sample clients
             client1 = Client(
@@ -96,6 +104,8 @@ def create_app(config_name=None):
                 client_id=client1.id,
                 date=date(2025, 8, 10),
                 due_date=date(2025, 8, 24),
+                vat_rate_id=standard_vat.id if standard_vat else None,
+                vat_rate=standard_vat.rate if standard_vat else 24,
                 status='saadetud'
             )
             invoice2 = Invoice(
@@ -103,6 +113,8 @@ def create_app(config_name=None):
                 client_id=client2.id,
                 date=date(2025, 8, 8),
                 due_date=date(2025, 8, 22),
+                vat_rate_id=standard_vat.id if standard_vat else None,
+                vat_rate=standard_vat.rate if standard_vat else 24,
                 status='makstud'
             )
             
@@ -135,6 +147,7 @@ def create_app(config_name=None):
             
             db.session.commit()
             click.echo('Sample data created successfully.')
+            click.echo(f'Created invoices with VAT rate: {standard_vat.name if standard_vat else "24% (fallback)"}')
     
     @app.cli.command()
     @click.argument('username')
@@ -143,5 +156,42 @@ def create_app(config_name=None):
         """Create an admin user (placeholder for future auth system)."""
         click.echo(f'Admin user {username} with email {email} would be created.')
         click.echo('Note: Authentication system not implemented yet.')
+    
+    @app.cli.command()
+    def init_vat_rates():
+        """Initialize default Estonian VAT rates."""
+        with app.app_context():
+            from app.models import VatRate
+            
+            try:
+                VatRate.create_default_rates()
+                click.echo('Default Estonian VAT rates created successfully:')
+                
+                # Display created rates
+                rates = VatRate.get_active_rates()
+                for rate in rates:
+                    click.echo(f'  • {rate.name}: {rate.rate}% - {rate.description}')
+                
+            except Exception as e:
+                click.echo(f'Error creating VAT rates: {str(e)}')
+                return
+    
+    @app.cli.command()
+    def update_overdue():
+        """Update overdue invoice statuses."""
+        with app.app_context():
+            from app.models import Invoice
+            
+            try:
+                updated_count = Invoice.update_overdue_invoices()
+                if updated_count > 0:
+                    db.session.commit()
+                    click.echo(f'Updated {updated_count} invoices to overdue status.')
+                else:
+                    click.echo('No invoices found that need overdue status update.')
+                    
+            except Exception as e:
+                db.session.rollback()
+                click.echo(f'Error updating overdue invoices: {str(e)}')
     
     return app

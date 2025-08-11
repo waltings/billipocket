@@ -180,10 +180,10 @@
 <body>
     <div class="header">
         <div class="company-info">
-            <div class="company-name">BilliPocket</div>
-            <div>Invoicing Made Simple</div>
-            <div>contact@billipocket.ee</div>
-            <div>+372 5555 0000</div>
+            <div class="company-name">{{ company.company_name or 'BilliPocket' }}</div>
+            <div>{{ company.company_website or 'Invoicing Made Simple' }}</div>
+            {% if company.company_email %}<div>{{ company.company_email }}</div>{% endif %}
+            {% if company.company_phone %}<div>{{ company.company_phone }}</div>{% endif %}
         </div>
         <div class="invoice-info">
             <div class="invoice-title">ARVE</div>
@@ -275,7 +275,7 @@
 
     <div class="footer">
         <p>Täname teid koostöö eest! Küsimuste korral võtke meiega ühendust.</p>
-        <p>See arve on genereeritud BilliPocket süsteemiga {{ today.strftime('%d.%m.%Y') }}.</p>
+        <p>See arve on genereeritud {{ company.company_name or 'BilliPocket' }} süsteemiga {{ today.strftime('%d.%m.%Y') }}.</p>
     </div>
 </body>
 </html>

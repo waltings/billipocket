@@ -6,17 +6,16 @@
  * Restarting with stat
  * Debugger is active!
  * Debugger PIN: 197-879-355
-127.0.0.1 - - [11/Aug/2025 10:28:19] "GET /invoices/1 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:28:20] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:28:20] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:28:24] "[35m[1mGET /invoice/1/pdf?style=standard HTTP/1.1[0m" 500 -
-127.0.0.1 - - [11/Aug/2025 10:30:17] "GET /clients HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:30:17] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:17] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:21] "GET /clients/3 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:30:21] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:21] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:23] "[35m[1mGET /invoices/new?client_id=3 HTTP/1.1[0m" 500 -
+127.0.0.1 - - [11/Aug/2025 17:44:13] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/default.py", line 922, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: no such table: clients
+
+The above exception was the direct cause of the following exception:
+
 Traceback (most recent call last):
   File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
     return self.wsgi_app(environ, start_response)
@@ -30,18 +29,51 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 121, in new_invoice
-    line_form.description.data and
-AttributeError: 'str' object has no attribute 'data'
-127.0.0.1 - - [11/Aug/2025 10:30:23] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:23] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:23] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:28] "GET /invoices HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:30:28] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:28] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:28] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:28] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:29] "[35m[1mGET /invoices/new HTTP/1.1[0m" 500 -
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 18, in invoices
+    clients = Client.query.order_by(Client.name.asc()).all()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/query.py", line 2693, in all
+    return self._iter().all()  # type: ignore
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/query.py", line 2847, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/session.py", line 2308, in execute
+    return self._execute_internal(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/session.py", line 2190, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/context.py", line 293, in orm_execute_statement
+    result = conn.execute(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1416, in execute
+    return meth(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/sql/elements.py", line 516, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1639, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 2343, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/default.py", line 922, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: clients
+[SQL: SELECT clients.id AS clients_id, clients.name AS clients_name, clients.registry_code AS clients_registry_code, clients.email AS clients_email, clients.phone AS clients_phone, clients.address AS clients_address, clients.created_at AS clients_created_at 
+FROM clients ORDER BY clients.name ASC]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+127.0.0.1 - - [11/Aug/2025 17:44:13] "GET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 17:44:13] "GET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 17:44:13] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 17:50:49] "[35m[1mGET / HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/default.py", line 922, in do_execute
+    cursor.execute(statement, parameters)
+sqlite3.OperationalError: no such table: invoices
+
+The above exception was the direct cause of the following exception:
+
 Traceback (most recent call last):
   File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
     return self.wsgi_app(environ, start_response)
@@ -55,72 +87,42 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 121, in new_invoice
-    line_form.description.data and
-AttributeError: 'str' object has no attribute 'data'
-127.0.0.1 - - [11/Aug/2025 10:30:29] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:30] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:30] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:30] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:41] "GET /clients HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:30:41] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:30:41] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:15] "POST /clients/new HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:31:15] "GET /clients HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:31:16] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:16] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:30] "GET /clients/4/edit HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:31:30] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:30] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:38] "[32mPOST /clients/4/edit HTTP/1.1[0m" 302 -
-127.0.0.1 - - [11/Aug/2025 10:31:38] "GET /clients/4 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:31:38] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:38] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:40] "GET /clients HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:31:40] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:40] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:48] "GET /invoices HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:31:48] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:48] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:48] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:48] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:52] "[35m[1mGET /invoices/new HTTP/1.1[0m" 500 -
-Traceback (most recent call last):
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
-    return self.wsgi_app(environ, start_response)
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
-    response = self.handle_exception(e)
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
-    response = self.full_dispatch_request()
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
-    rv = self.handle_user_exception(e)
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
-    rv = self.dispatch_request()
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
-    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 121, in new_invoice
-    line_form.description.data and
-AttributeError: 'str' object has no attribute 'data'
-127.0.0.1 - - [11/Aug/2025 10:31:52] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:52] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:52] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:31:52] "[36mGET /invoices/new?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:32:23] "[32mPOST /invoices/1/duplicate HTTP/1.1[0m" 302 -
-127.0.0.1 - - [11/Aug/2025 10:32:23] "GET /invoices/3 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:32:23] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:32:23] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:32:26] "GET /invoices HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:32:26] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:32:26] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:32:26] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:32:26] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:32:42] "[35m[1mGET /invoice/3/pdf/standard HTTP/1.1[0m" 500 -
-127.0.0.1 - - [11/Aug/2025 10:32:54] "[32mPOST /invoices/3/status/saadetud HTTP/1.1[0m" 302 -
-127.0.0.1 - - [11/Aug/2025 10:32:54] "GET /invoices/3 HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:32:54] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:32:54] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:33:01] "GET /invoices HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 10:33:01] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:33:01] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:33:01] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 10:33:01] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/dashboard.py", line 17, in overview
+    updated_count = Invoice.update_overdue_invoices()
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/models.py", line 206, in update_overdue_invoices
+    overdue_invoices = cls.query.filter(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/query.py", line 2693, in all
+    return self._iter().all()  # type: ignore
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/query.py", line 2847, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/session.py", line 2308, in execute
+    return self._execute_internal(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/session.py", line 2190, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/context.py", line 293, in orm_execute_statement
+    result = conn.execute(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1416, in execute
+    return meth(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/sql/elements.py", line 516, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1639, in _execute_clauseelement
+    ret = self._execute_context(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 2343, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/default.py", line 922, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: invoices
+[SQL: SELECT invoices.id AS invoices_id, invoices.number AS invoices_number, invoices.client_id AS invoices_client_id, invoices.date AS invoices_date, invoices.due_date AS invoices_due_date, invoices.subtotal AS invoices_subtotal, invoices.vat_rate_id AS invoices_vat_rate_id, invoices.vat_rate AS invoices_vat_rate, invoices.total AS invoices_total, invoices.status AS invoices_status, invoices.created_at AS invoices_created_at, invoices.updated_at AS invoices_updated_at 
+FROM invoices 
+WHERE invoices.due_date < ? AND invoices.status = ?]
+[parameters: ('2025-08-11', 'saadetud')]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+127.0.0.1 - - [11/Aug/2025 17:50:49] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 17:50:49] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 17:50:49] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -

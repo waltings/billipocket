@@ -176,7 +176,7 @@
                         <i class="bi bi-pencil"></i>
                       </a>
                       {% endif %}
-                      <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='standard') }}" 
+                      <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" 
                          class="btn btn-outline-info" 
                          target="_blank"
                          title="PDF">

@@ -2,44 +2,51 @@ from flask import Blueprint, render_template, request, send_file, abort
 from datetime import date
 from io import BytesIO
 from weasyprint import HTML, CSS
-from app.models import Invoice
+from app.models import Invoice, CompanySettings
 
 pdf_bp = Blueprint('pdf', __name__)
 
 
 @pdf_bp.route('/invoice/<int:invoice_id>/pdf')
 @pdf_bp.route('/invoice/<int:invoice_id>/pdf/<template>')
-def invoice_pdf(invoice_id, template='standard'):
+def invoice_pdf(invoice_id, template=None):
     """Generate PDF for invoice with specified template."""
     invoice = Invoice.query.get_or_404(invoice_id)
     
-    # Support both ?template= and ?style= parameters for backwards compatibility
-    if 'style' in request.args:
-        template = request.args.get('style', 'standard')
-    elif 'template' in request.args:
-        template = request.args.get('template', 'standard')
+    # Get company settings for default template
+    company_settings = CompanySettings.get_settings()
+    
+    # Determine template to use (priority: URL param > query param > settings default)
+    if not template:
+        # Support both ?template= and ?style= parameters for backwards compatibility
+        if 'style' in request.args:
+            template = request.args.get('style')
+        elif 'template' in request.args:
+            template = request.args.get('template')
+        else:
+            # Use default from settings
+            template = company_settings.default_pdf_template or 'standard'
     
     # Validate template
     valid_templates = ['standard', 'modern', 'elegant']
     if template not in valid_templates:
-        template = 'standard'
+        template = company_settings.default_pdf_template or 'standard'
     
     # Select template file
     template_file = f'pdf/invoice_{template}.html'
     
     try:
-        # Render HTML with invoice data
+        # Render HTML with invoice data and company settings
         html = render_template(
             template_file, 
             invoice=invoice, 
+            company=company_settings,
             today=date.today()
         )
         
         # Generate PDF with WeasyPrint
-        pdf_bytes = HTML(
-            string=html, 
-            base_url=request.base_url
-        ).write_pdf()
+        html_doc = HTML(string=html)
+        pdf_bytes = html_doc.write_pdf()
         
         # Create filename
         filename = f"invoice_{invoice.number}_{template}.pdf"
@@ -60,23 +67,31 @@ def invoice_pdf(invoice_id, template='standard'):
 
 @pdf_bp.route('/invoice/<int:invoice_id>/preview')
 @pdf_bp.route('/invoice/<int:invoice_id>/preview/<template>')
-def invoice_preview(invoice_id, template='standard'):
+def invoice_preview(invoice_id, template=None):
     """Preview invoice HTML before PDF generation."""
     invoice = Invoice.query.get_or_404(invoice_id)
+    
+    # Get company settings for default template
+    company_settings = CompanySettings.get_settings()
+    
+    # Determine template to use
+    if not template:
+        template = request.args.get('template') or request.args.get('style') or company_settings.default_pdf_template or 'standard'
     
     # Validate template
     valid_templates = ['standard', 'modern', 'elegant']
     if template not in valid_templates:
-        template = 'standard'
+        template = company_settings.default_pdf_template or 'standard'
     
     # Select template file
     template_file = f'pdf/invoice_{template}.html'
     
     try:
-        # Render and return HTML directly
+        # Render and return HTML directly with company settings
         return render_template(
             template_file, 
             invoice=invoice, 
+            company=company_settings,
             today=date.today()
         )
     except Exception as e:

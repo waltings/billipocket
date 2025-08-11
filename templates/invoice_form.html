@@ -66,12 +66,45 @@
           </div>
           <div class="bp-card-body">
             <div class="row g-3">
+              <!-- Invoice Number -->
+              <div class="col-md-6">
+                <label for="{{ form.number.id if form.number.id else 'number' }}" class="form-label">
+                  {{ form.number.label.text if form.number.label else 'Arve number' }} <span class="text-danger">*</span>
+                </label>
+                {% if form.number.__call__ %}
+                {{ form.number(class_="form-control" + (" is-invalid" if form.number.errors else ""), placeholder="Näiteks: 2025-0001") }}
+                {% else %}
+                <input type="text" 
+                       name="{{ form.number.name or 'number' }}" 
+                       id="{{ form.number.name or 'number' }}" 
+                       class="form-control{{ " is-invalid" if form.number.errors else "" }}" 
+                       placeholder="Näiteks: 2025-0001" 
+                       value="{{ form.number.data or '' }}">
+                {% endif %}
+                {% if form.number.errors %}
+                <div class="invalid-feedback">
+                  {{ form.number.errors[0] }}
+                </div>
+                {% endif %}
+              </div>
+              
               <!-- Client Selection -->
               <div class="col-md-6">
-                <label for="{{ form.client_id.id }}" class="form-label">
-                  {{ form.client_id.label.text }} <span class="text-danger">*</span>
+                <label for="{{ form.client_id.id if form.client_id.id else 'client_id' }}" class="form-label">
+                  {{ form.client_id.label.text if form.client_id.label else 'Klient' }} <span class="text-danger">*</span>
                 </label>
+                {% if form.client_id.__call__ %}
                 {{ form.client_id(class_="form-select" + (" is-invalid" if form.client_id.errors else "")) }}
+                {% else %}
+                <select name="client_id" id="client_id" class="form-select{{ " is-invalid" if form.client_id.errors else "" }}">
+                  <option value="">Vali klient...</option>
+                  {% for client in clients %}
+                  <option value="{{ client.id }}"{% if form.client_id.data == client.id|string %} selected{% endif %}>
+                    {{ client.name }} ({{ client.email }})
+                  </option>
+                  {% endfor %}
+                </select>
+                {% endif %}
                 {% if form.client_id.errors %}
                 <div class="invalid-feedback">
                   {% for error in form.client_id.errors %}{{ error }}{% endfor %}
@@ -82,10 +115,19 @@
 
               <!-- Invoice Status -->
               <div class="col-md-6">
-                <label for="{{ form.status.id }}" class="form-label">
-                  {{ form.status.label.text }}
+                <label for="{{ form.status.id if form.status.id else 'status' }}" class="form-label">
+                  {{ form.status.label.text if form.status.label else 'Staatus' }}
                 </label>
+                {% if form.status.__call__ %}
                 {{ form.status(class_="form-select" + (" is-invalid" if form.status.errors else "")) }}
+                {% else %}
+                <select name="status" id="status" class="form-select{{ " is-invalid" if form.status.errors else "" }}">
+                  <option value="mustand"{% if form.status.data == 'mustand' %} selected{% endif %}>Mustand</option>
+                  <option value="saadetud"{% if form.status.data == 'saadetud' %} selected{% endif %}>Saadetud</option>
+                  <option value="makstud"{% if form.status.data == 'makstud' %} selected{% endif %}>Makstud</option>
+                  <option value="tühistatud"{% if form.status.data == 'tühistatud' %} selected{% endif %}>Tühistatud</option>
+                </select>
+                {% endif %}
                 {% if form.status.errors %}
                 <div class="invalid-feedback">
                   {% for error in form.status.errors %}{{ error }}{% endfor %}
@@ -95,10 +137,14 @@
 
               <!-- Invoice Date -->
               <div class="col-md-6">
-                <label for="{{ form.date.id }}" class="form-label">
-                  {{ form.date.label.text }} <span class="text-danger">*</span>
+                <label for="{{ form.date.id if form.date.id else 'date' }}" class="form-label">
+                  {{ form.date.label.text if form.date.label else 'Kuupäev' }} <span class="text-danger">*</span>
                 </label>
+                {% if form.date.__call__ %}
                 {{ form.date(class_="form-control" + (" is-invalid" if form.date.errors else "")) }}
+                {% else %}
+                <input type="date" name="date" id="date" class="form-control{{ " is-invalid" if form.date.errors else "" }}" value="{{ form.date.data or '' }}">
+                {% endif %}
                 {% if form.date.errors %}
                 <div class="invalid-feedback">
                   {% for error in form.date.errors %}{{ error }}{% endfor %}
@@ -108,10 +154,14 @@
 
               <!-- Due Date -->
               <div class="col-md-6">
-                <label for="{{ form.due_date.id }}" class="form-label">
-                  {{ form.due_date.label.text }} <span class="text-danger">*</span>
+                <label for="{{ form.due_date.id if form.due_date.id else 'due_date' }}" class="form-label">
+                  {{ form.due_date.label.text if form.due_date.label else 'Maksetähtaeg' }} <span class="text-danger">*</span>
                 </label>
+                {% if form.due_date.__call__ %}
                 {{ form.due_date(class_="form-control" + (" is-invalid" if form.due_date.errors else "")) }}
+                {% else %}
+                <input type="date" name="due_date" id="due_date" class="form-control{{ " is-invalid" if form.due_date.errors else "" }}" value="{{ form.due_date.data or '' }}">
+                {% endif %}
                 {% if form.due_date.errors %}
                 <div class="invalid-feedback">
                   {% for error in form.due_date.errors %}{{ error }}{% endfor %}
@@ -121,19 +171,16 @@
 
               <!-- VAT Rate -->
               <div class="col-md-6">
-                <label for="{{ form.vat_rate.id }}" class="form-label">
-                  {{ form.vat_rate.label.text }}
+                <label for="{{ form.vat_rate_id.id }}" class="form-label">
+                  {{ form.vat_rate_id.label.text }}
                 </label>
-                <div class="input-group">
-                  {{ form.vat_rate(class_="form-control" + (" is-invalid" if form.vat_rate.errors else "")) }}
-                  <span class="input-group-text">%</span>
-                  {% if form.vat_rate.errors %}
-                  <div class="invalid-feedback">
-                    {% for error in form.vat_rate.errors %}{{ error }}{% endfor %}
-                  </div>
-                  {% endif %}
+                {{ form.vat_rate_id(class_="form-control" + (" is-invalid" if form.vat_rate_id.errors else ""), id="vat_rate_id") }}
+                {% if form.vat_rate_id.errors %}
+                <div class="invalid-feedback">
+                  {% for error in form.vat_rate_id.errors %}{{ error }}{% endfor %}
                 </div>
-                <div class="form-text">Eestis kehtiv KM määr on 24%</div>
+                {% endif %}
+                <div class="form-text">Valige sobiv KM määr</div>
               </div>
             </div>
           </div>
@@ -153,14 +200,22 @@
             <div id="invoice-lines-container">
               {% for line_form in form.lines %}
               <div class="invoice-line" data-line-index="{{ loop.index0 }}">
-                {{ line_form.id() }}
+                {% if line_form.id.__call__ %}
+                {{ line_form.id }}
+                {% else %}
+                <input type="hidden" name="{{ line_form.id.name or ('lines-' ~ loop.index0 ~ '-id') }}" value="{{ line_form.id.data or '' }}">
+                {% endif %}
                 <div class="row g-3 align-items-end">
                   <div class="col-md-1 text-center">
                     <i class="bi bi-grip-vertical drag-handle" title="Lohista rida"></i>
                   </div>
                   <div class="col-md-5">
-                    <label for="{{ line_form.description.id }}" class="form-label small">Kirjeldus</label>
+                    <label for="{{ line_form.description.id if line_form.description.id else ('lines-' ~ loop.index0 ~ '-description') }}" class="form-label small">Kirjeldus</label>
+                    {% if line_form.description.__call__ %}
                     {{ line_form.description(class_="form-control" + (" is-invalid" if line_form.description.errors else ""), placeholder="Teenuse või toote kirjeldus") }}
+                    {% else %}
+                    <input type="text" name="{{ line_form.description.name or ('lines-' ~ loop.index0 ~ '-description') }}" id="{{ line_form.description.name or ('lines-' ~ loop.index0 ~ '-description') }}" class="form-control{{ " is-invalid" if line_form.description.errors else "" }}" placeholder="Teenuse või toote kirjeldus" value="{{ line_form.description.data or '' }}">
+                    {% endif %}
                     {% if line_form.description.errors %}
                     <div class="invalid-feedback">
                       {% for error in line_form.description.errors %}{{ error }}{% endfor %}
@@ -168,8 +223,12 @@
                     {% endif %}
                   </div>
                   <div class="col-md-2">
-                    <label for="{{ line_form.qty.id }}" class="form-label small">Kogus</label>
+                    <label for="{{ line_form.qty.id if line_form.qty.id else ('lines-' ~ loop.index0 ~ '-qty') }}" class="form-label small">Kogus</label>
+                    {% if line_form.qty.__call__ %}
                     {{ line_form.qty(class_="form-control line-qty" + (" is-invalid" if line_form.qty.errors else ""), placeholder="1", step="0.01") }}
+                    {% else %}
+                    <input type="number" name="{{ line_form.qty.name or ('lines-' ~ loop.index0 ~ '-qty') }}" id="{{ line_form.qty.name or ('lines-' ~ loop.index0 ~ '-qty') }}" class="form-control line-qty{{ " is-invalid" if line_form.qty.errors else "" }}" placeholder="1" step="0.01" min="0" value="{{ line_form.qty.data or '' }}">
+                    {% endif %}
                     {% if line_form.qty.errors %}
                     <div class="invalid-feedback">
                       {% for error in line_form.qty.errors %}{{ error }}{% endfor %}
@@ -177,9 +236,13 @@
                     {% endif %}
                   </div>
                   <div class="col-md-2">
-                    <label for="{{ line_form.unit_price.id }}" class="form-label small">Ühiku hind</label>
+                    <label for="{{ line_form.unit_price.id if line_form.unit_price.id else ('lines-' ~ loop.index0 ~ '-unit_price') }}" class="form-label small">Ühiku hind</label>
                     <div class="input-group">
+                      {% if line_form.unit_price.__call__ %}
                       {{ line_form.unit_price(class_="form-control line-price" + (" is-invalid" if line_form.unit_price.errors else ""), placeholder="0.00", step="0.01") }}
+                      {% else %}
+                      <input type="number" name="{{ line_form.unit_price.name or ('lines-' ~ loop.index0 ~ '-unit_price') }}" id="{{ line_form.unit_price.name or ('lines-' ~ loop.index0 ~ '-unit_price') }}" class="form-control line-price{{ " is-invalid" if line_form.unit_price.errors else "" }}" placeholder="0.00" step="0.01" min="0" value="{{ line_form.unit_price.data or '' }}">
+                      {% endif %}
                       <span class="input-group-text">€</span>
                     </div>
                     {% if line_form.unit_price.errors %}
@@ -266,15 +329,15 @@
               <hr>
               <div class="small text-muted mb-2">Arve eelvaade:</div>
               <div class="d-grid gap-1">
-                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='standard') }}" 
+                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" 
                    class="btn btn-outline-info btn-sm" target="_blank">
                   <i class="bi bi-file-earmark-pdf me-1"></i>Standard PDF
                 </a>
-                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='modern') }}" 
+                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='modern') }}" 
                    class="btn btn-outline-info btn-sm" target="_blank">
                   <i class="bi bi-file-earmark-pdf me-1"></i>Modern PDF
                 </a>
-                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, style='elegant') }}" 
+                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='elegant') }}" 
                    class="btn btn-outline-info btn-sm" target="_blank">
                   <i class="bi bi-file-earmark-pdf me-1"></i>Elegant PDF
                 </a>
@@ -308,6 +371,7 @@
 <!-- Line Template (hidden) -->
 <div id="line-template" class="d-none">
   <div class="invoice-line" data-line-index="">
+    <input type="hidden" name="lines-{index}-id" value="">
     <div class="row g-3 align-items-end">
       <div class="col-md-1 text-center">
         <i class="bi bi-grip-vertical drag-handle" title="Lohista rida"></i>
@@ -345,23 +409,51 @@
 <script>
 let lineIndex = {{ form.lines|length or 0 }};
 
+// VAT rate mapping (ID -> rate percentage)
+const vatRateMap = {
+  {% for vr in vat_rates %}
+  {{ vr.id }}: {{ vr.rate }},
+  {% endfor %}
+};
+
+// Get next available line index
+function getNextLineIndex() {
+  const container = document.getElementById('invoice-lines-container');
+  const existingLines = container.querySelectorAll('.invoice-line');
+  let maxIndex = -1;
+  
+  existingLines.forEach(line => {
+    const nameAttr = line.querySelector('input[name*="lines-"]')?.getAttribute('name');
+    if (nameAttr) {
+      const match = nameAttr.match(/lines-(\d+)-/);
+      if (match) {
+        maxIndex = Math.max(maxIndex, parseInt(match[1]));
+      }
+    }
+  });
+  
+  return maxIndex + 1;
+}
+
 // Add new invoice line
 function addInvoiceLine() {
   const container = document.getElementById('invoice-lines-container');
   const template = document.getElementById('line-template');
   const newLine = template.cloneNode(true);
   
+  const currentIndex = getNextLineIndex();
+  
   newLine.removeAttribute('id');
   newLine.classList.remove('d-none');
-  newLine.setAttribute('data-line-index', lineIndex);
+  newLine.setAttribute('data-line-index', currentIndex);
   
   // Update form field names and ids
   const inputs = newLine.querySelectorAll('input');
   inputs.forEach(input => {
     const name = input.getAttribute('name');
     if (name) {
-      input.setAttribute('name', name.replace('{index}', lineIndex));
-      input.setAttribute('id', name.replace('{index}', lineIndex).replace('-', '_'));
+      input.setAttribute('name', name.replace('{index}', currentIndex));
+      input.setAttribute('id', name.replace('{index}', currentIndex).replace('-', '_'));
     }
   });
   
@@ -370,7 +462,7 @@ function addInvoiceLine() {
   labels.forEach(label => {
     const forAttr = label.getAttribute('for');
     if (forAttr) {
-      label.setAttribute('for', forAttr.replace('{index}', lineIndex).replace('-', '_'));
+      label.setAttribute('for', forAttr.replace('{index}', currentIndex).replace('-', '_'));
     }
   });
   
@@ -379,7 +471,6 @@ function addInvoiceLine() {
   // Add event listeners
   addLineEventListeners(container.lastElementChild);
   
-  lineIndex++;
   updateTotals();
 }
 
@@ -388,11 +479,27 @@ function removeInvoiceLine(button) {
   const line = button.closest('.invoice-line');
   const container = document.getElementById('invoice-lines-container');
   
-  // Always allow removing lines, but ensure at least one empty line remains
-  line.remove();
+  // Check if this line has an existing ID (meaning it exists in database)
+  const idField = line.querySelector('input[name$="-id"]');
+  if (idField && idField.value) {
+    // Mark for deletion instead of removing DOM element
+    line.style.display = 'none';
+    line.classList.add('marked-for-deletion');
+    
+    // Add a hidden field to indicate deletion
+    const deleteField = document.createElement('input');
+    deleteField.type = 'hidden';
+    deleteField.name = idField.name.replace('-id', '-delete');
+    deleteField.value = 'true';
+    line.appendChild(deleteField);
+  } else {
+    // New line that hasn't been saved yet - safe to remove completely
+    line.remove();
+  }
   
-  // If no lines left, add an empty one
-  if (container.children.length === 0) {
+  // If no visible lines left, add an empty one
+  const visibleLines = container.querySelectorAll('.invoice-line:not(.marked-for-deletion)');
+  if (visibleLines.length === 0) {
     addInvoiceLine();
   }
   
@@ -410,14 +517,17 @@ function addLineEventListeners(line) {
       input.addEventListener('blur', updateTotals);
     }
   });
+  
+  // Add validation listeners
+  addLineValidation(line);
 }
 
 // Update invoice totals
 function updateTotals() {
   let subtotal = 0;
   
-  // Calculate line totals
-  document.querySelectorAll('.invoice-line').forEach(line => {
+  // Calculate line totals (skip hidden/deleted lines)
+  document.querySelectorAll('.invoice-line:not(.marked-for-deletion)').forEach(line => {
     const qty = parseFloat(line.querySelector('.line-qty')?.value) || 0;
     const price = parseFloat(line.querySelector('.line-price')?.value) || 0;
     const lineTotal = qty * price;
@@ -430,9 +540,10 @@ function updateTotals() {
     subtotal += lineTotal;
   });
   
-  // Get VAT rate
-  const vatRateInput = document.getElementById('vat_rate');
-  const vatRate = parseFloat(vatRateInput?.value) || 24;
+  // Get VAT rate from dropdown
+  const vatRateSelect = document.getElementById('vat_rate_id');
+  const vatRateId = parseInt(vatRateSelect?.value);
+  const vatRate = vatRateMap[vatRateId] || 24;
   
   // Calculate VAT amount
   const vatAmount = subtotal * (vatRate / 100);
@@ -460,10 +571,9 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   // VAT rate change listener
-  const vatRateInput = document.getElementById('vat_rate');
-  if (vatRateInput) {
-    vatRateInput.addEventListener('input', updateTotals);
-    vatRateInput.addEventListener('blur', updateTotals);
+  const vatRateSelect = document.getElementById('vat_rate_id');
+  if (vatRateSelect) {
+    vatRateSelect.addEventListener('change', updateTotals);
   }
   
   // Auto-fill due date based on invoice date
@@ -480,29 +590,80 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Form validation
+  // Enhanced form validation
   const form = document.getElementById('invoiceForm');
   form.addEventListener('submit', function(event) {
     let isValid = true;
+    let errorMessages = [];
     
-    // Check if at least one line has data
-    const lines = document.querySelectorAll('.invoice-line');
+    // Check required fields
+    const clientSelect = document.getElementById('client_id');
+    if (!clientSelect.value) {
+      errorMessages.push('Klient on kohustuslik');
+      clientSelect.classList.add('is-invalid');
+      isValid = false;
+    }
+    
+    const dateInput = document.getElementById('date');
+    if (!dateInput.value) {
+      errorMessages.push('Arve kuupäev on kohustuslik');
+      dateInput.classList.add('is-invalid');
+      isValid = false;
+    }
+    
+    const dueDateInput = document.getElementById('due_date');
+    if (!dueDateInput.value) {
+      errorMessages.push('Maksetähtaeg on kohustuslik');
+      dueDateInput.classList.add('is-invalid');
+      isValid = false;
+    }
+    
+    // Check if at least one line has complete data (skip hidden/deleted lines)
+    const lines = document.querySelectorAll('.invoice-line:not(.marked-for-deletion)');
     let hasValidLine = false;
+    let incompleteLines = 0;
     
     lines.forEach(line => {
-      const description = line.querySelector('input[name*="description"]')?.value;
+      const description = line.querySelector('input[name*="description"]')?.value?.trim();
       const qty = line.querySelector('input[name*="qty"]')?.value;
       const price = line.querySelector('input[name*="unit_price"]')?.value;
       
       if (description && qty && price) {
         hasValidLine = true;
+      } else if (description || qty || price) {
+        // Partially filled line
+        incompleteLines++;
+        if (!description) line.querySelector('input[name*="description"]').classList.add('is-invalid');
+        if (!qty) line.querySelector('input[name*="qty"]').classList.add('is-invalid');
+        if (!price) line.querySelector('input[name*="unit_price"]').classList.add('is-invalid');
       }
     });
     
     if (!hasValidLine) {
-      event.preventDefault();
-      alert('Palun lisa vähemalt üks arve rida.');
+      errorMessages.push('Palun lisa vähemalt üks täielik arve rida');
       isValid = false;
+    } else if (incompleteLines > 0) {
+      errorMessages.push('Mõnel arve real on andmed puudulikud');
+      isValid = false;
+    }
+    
+    // Show validation errors
+    if (!isValid) {
+      event.preventDefault();
+      
+      const errorMessage = errorMessages.join('. ') + '.';
+      if (window.BilliPocket && window.BilliPocket.showMessage) {
+        window.BilliPocket.showMessage(errorMessage, 'error');
+      } else {
+        alert(errorMessage);
+      }
+      
+      // Focus on first error field
+      const firstError = form.querySelector('.is-invalid');
+      if (firstError) {
+        firstError.focus();
+        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
     
     return isValid;
@@ -521,21 +682,39 @@ document.addEventListener('DOMContentLoaded', function() {
 // Real-time validation feedback
 document.querySelectorAll('input, select, textarea').forEach(function(field) {
   field.addEventListener('blur', function() {
-    if (this.checkValidity()) {
-      this.classList.remove('is-invalid');
+    // Clear validation state first
+    this.classList.remove('is-invalid', 'is-valid');
+    
+    if (this.checkValidity() && this.value.trim()) {
       this.classList.add('is-valid');
-    } else {
-      this.classList.remove('is-valid');
+    } else if (!this.checkValidity() || (this.required && !this.value.trim())) {
       this.classList.add('is-invalid');
     }
   });
   
   field.addEventListener('input', function() {
-    if (this.classList.contains('is-invalid') && this.checkValidity()) {
-      this.classList.remove('is-invalid');
-      this.classList.add('is-valid');
+    if (this.classList.contains('is-invalid')) {
+      if (this.checkValidity() && (!this.required || this.value.trim())) {
+        this.classList.remove('is-invalid');
+        if (this.value.trim()) {
+          this.classList.add('is-valid');
+        }
+      }
     }
   });
 });
+
+// Enhanced line input validation
+function addLineValidation(line) {
+  const inputs = line.querySelectorAll('input[type="text"], input[type="number"]');
+  inputs.forEach(input => {
+    input.addEventListener('input', function() {
+      // Remove invalid state when user starts typing
+      if (this.classList.contains('is-invalid')) {
+        this.classList.remove('is-invalid');
+      }
+    });
+  });
+}
 </script>
 {% endblock %}
