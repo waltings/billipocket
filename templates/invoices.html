@@ -20,7 +20,7 @@
 
   <!-- Invoice Statistics Cards -->
   <div class="row mb-4">
-    <div class="col-md-3 col-6">
+    <div class="col-md-6 col-6">
       <div class="bp-card text-center">
         <div class="bp-card-body py-3">
           <div class="h4 mb-1 text-primary">{{ invoices|length }}</div>
@@ -28,27 +28,11 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3 col-6">
+    <div class="col-md-6 col-6">
       <div class="bp-card text-center">
         <div class="bp-card-body py-3">
-          <div class="h4 mb-1 text-success">{{ invoices|selectattr('status', 'equalto', 'makstud')|list|length }}</div>
-          <div class="small text-muted">Makstud</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3 col-6">
-      <div class="bp-card text-center">
-        <div class="bp-card-body py-3">
-          <div class="h4 mb-1 text-warning">{{ invoices|selectattr('status', 'equalto', 'saadetud')|list|length }}</div>
-          <div class="small text-muted">Saadetud</div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3 col-6">
-      <div class="bp-card text-center">
-        <div class="bp-card-body py-3">
-          <div class="h4 mb-1 text-danger">{{ invoices|selectattr('status', 'equalto', 'tähtaeg ületatud')|list|length }}</div>
-          <div class="small text-muted">Tähtaeg ületatud</div>
+          <div class="h4 mb-1 text-success">{{ "%.2f"|format(invoices|sum(attribute='total')) }}€</div>
+          <div class="small text-muted">Kogu summa</div>
         </div>
       </div>
     </div>
@@ -59,10 +43,6 @@
     <div class="bp-card-body">
       <form method="GET" class="row g-3">
         {{ search_form.hidden_tag() }}
-        <div class="col-md-3">
-          <label for="{{ search_form.status.id }}" class="form-label">Staatus</label>
-          {{ search_form.status(class_="form-select") }}
-        </div>
         <div class="col-md-3">
           <label for="{{ search_form.client_id.id }}" class="form-label">Klient</label>
           {{ search_form.client_id(class_="form-select") }}
@@ -118,7 +98,6 @@
               <th class="border-0">Tähtaeg</th>
               <th class="border-0">Klient</th>
               <th class="border-0 text-end">Summa</th>
-              <th class="border-0 text-center">Staatus</th>
               <th class="border-0 text-end">Toimingud</th>
             </tr>
           </thead>
@@ -145,17 +124,6 @@
               <td class="text-end">
                 <span class="fw-medium">{{ "%.2f"|format(invoice.total) }}€</span>
               </td>
-              <td class="text-center">
-                {% if invoice.status == 'makstud' %}
-                <span class="badge bg-success">Makstud</span>
-                {% elif invoice.status == 'saadetud' %}
-                <span class="badge bg-primary">Saadetud</span>
-                {% elif invoice.status == 'mustand' %}
-                <span class="badge bg-secondary">Mustand</span>
-                {% elif invoice.status == 'tähtaeg ületatud' %}
-                <span class="badge bg-danger">Tähtaeg ületatud</span>
-                {% endif %}
-              </td>
               <td class="text-end">
                 <div class="bp-invoice-actions d-flex gap-1 justify-content-end" role="group">
                   <a href="{{ url_for('invoices.view_invoice', invoice_id=invoice.id) }}" 
@@ -178,9 +146,9 @@
                       <i class="bi bi-file-earmark-pdf"></i>
                     </button>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" target="_blank">Standard PDF</a></li>
-                      <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='modern') }}" target="_blank">Modern PDF</a></li>
-                      <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='elegant') }}" target="_blank">Elegant PDF</a></li>
+                      <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', id=invoice.id, template='standard') }}" target="_blank">Standard PDF</a></li>
+                      <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', id=invoice.id, template='modern') }}" target="_blank">Modern PDF</a></li>
+                      <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', id=invoice.id, template='elegant') }}" target="_blank">Elegant PDF</a></li>
                     </ul>
                   </div>
                   

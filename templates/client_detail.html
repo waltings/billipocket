@@ -128,7 +128,6 @@
                   <th class="border-0">Arve nr</th>
                   <th class="border-0">Kuupäev</th>
                   <th class="border-0">Tähtaeg</th>
-                  <th class="border-0">Staatus</th>
                   <th class="border-0 text-end">Summa</th>
                   <th class="border-0 text-end">Toimingud</th>
                 </tr>
@@ -137,7 +136,7 @@
                 {% for invoice in invoices %}
                 <tr>
                   <td>
-                    <a href="{{ url_for('invoices.view_invoice', invoice_id=invoice.id) }}" 
+                    <a href="{{ url_for('invoices.view_invoice', invoice_invoice_id=invoice.id) }}" 
                        class="text-decoration-none fw-medium">
                       {{ invoice.number }}
                     </a>
@@ -148,23 +147,12 @@
                       {{ invoice.due_date.strftime('%d.%m.%Y') }}
                     </span>
                   </td>
-                  <td>
-                    {% if invoice.status == 'mustand' %}
-                    <span class="badge bg-secondary">Mustand</span>
-                    {% elif invoice.status == 'saadetud' %}
-                    <span class="badge bg-warning text-dark">Saadetud</span>
-                    {% elif invoice.status == 'makstud' %}
-                    <span class="badge bg-success">Makstud</span>
-                    {% elif invoice.status == 'tähtaeg ületatud' %}
-                    <span class="badge bg-danger">Tähtaeg ületatud</span>
-                    {% endif %}
-                  </td>
                   <td class="text-end">
                     <span class="fw-medium">{{ "%.2f"|format(invoice.total) }}€</span>
                   </td>
                   <td class="text-end">
                     <div class="btn-group btn-group-sm" role="group">
-                      <a href="{{ url_for('invoices.view_invoice', invoice_id=invoice.id) }}" 
+                      <a href="{{ url_for('invoices.view_invoice', invoice_invoice_id=invoice.id) }}" 
                          class="btn btn-outline-primary" 
                          title="Vaata arvet">
                         <i class="bi bi-eye"></i>
@@ -176,7 +164,7 @@
                         <i class="bi bi-pencil"></i>
                       </a>
                       {% endif %}
-                      <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" 
+                      <a href="{{ url_for('pdf.invoice_pdf', id=invoice.id, template='standard') }}" 
                          class="btn btn-outline-info" 
                          target="_blank"
                          title="PDF">

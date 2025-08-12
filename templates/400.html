@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}Vigane päring - BilliPocket{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="text-center">
+                <h1 class="display-1 fw-bold text-muted">400</h1>
+                <p class="fs-3"><span class="text-danger">Oops!</span> Vigane päring</p>
+                
+                {% if error_message %}
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle me-2"></i>{{ error_message }}
+                </div>
+                {% else %}
+                <p class="lead">
+                    Teie päring oli vigane või mittetäielik.
+                </p>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <a href="{{ url_for('dashboard.overview') }}" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>Tagasi avalehele
+                    </a>
+                    <button onclick="history.back()" class="btn btn-secondary ms-2">
+                        <i class="fas fa-arrow-left me-2"></i>Tagasi
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

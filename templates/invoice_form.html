@@ -329,15 +329,15 @@
               <hr>
               <div class="small text-muted mb-2">Arve eelvaade:</div>
               <div class="d-grid gap-1">
-                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" 
+                <a href="{{ url_for('pdf.invoice_pdf', id=invoice.id, template='standard') }}" 
                    class="btn btn-outline-info btn-sm" target="_blank">
                   <i class="bi bi-file-earmark-pdf me-1"></i>Standard PDF
                 </a>
-                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='modern') }}" 
+                <a href="{{ url_for('pdf.invoice_pdf', id=invoice.id, template='modern') }}" 
                    class="btn btn-outline-info btn-sm" target="_blank">
                   <i class="bi bi-file-earmark-pdf me-1"></i>Modern PDF
                 </a>
-                <a href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='elegant') }}" 
+                <a href="{{ url_for('pdf.invoice_pdf', id=invoice.id, template='elegant') }}" 
                    class="btn btn-outline-info btn-sm" target="_blank">
                   <i class="bi bi-file-earmark-pdf me-1"></i>Elegant PDF
                 </a>

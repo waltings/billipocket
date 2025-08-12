@@ -79,7 +79,7 @@ class Client(db.Model):
     invoices = db.relationship('Invoice', backref='client', lazy=True, cascade='all, delete-orphan')
     
     def __repr__(self):
-        return f'<Client {self.name}>'
+        return f'<Client #{self.id}: "{self.name}" ({self.email or "no email"})>'
     
     @property
     def invoice_count(self):
@@ -127,7 +127,7 @@ class Invoice(db.Model):
     )
     
     def __repr__(self):
-        return f'<Invoice {self.number}>'
+        return f'<Invoice {self.number}: {self.client.name if self.client else "No Client"} - €{self.total} ({self.status})>'
     
     @property
     def vat_amount(self):
@@ -233,6 +233,9 @@ class InvoiceLine(db.Model):
         db.CheckConstraint('unit_price >= 0', name='check_unit_price_non_negative'),
         db.CheckConstraint('line_total >= 0', name='check_line_total_non_negative'),
     )
+    
+    def __repr__(self):
+        return f'<InvoiceLine "{self.description[:50]}..." qty={self.qty} price={self.unit_price} total={self.line_total}>'
 
 
 class CompanySettings(db.Model):

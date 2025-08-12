@@ -16,7 +16,7 @@ from datetime import date, timedelta
 from decimal import Decimal
 from sqlalchemy.exc import IntegrityError
 
-from app.models import Client, Invoice, InvoiceLine
+from app.models import Client, Invoice, InvoiceLine, VatRate, CompanySettings
 
 
 class TestClientModel:
@@ -691,3 +691,402 @@ class TestEstonianVATCalculations:
         assert invoice.subtotal == expected_subtotal
         assert invoice.vat_amount == expected_vat
         assert invoice.total == expected_total
+
+
+class TestVatRateModel:
+    """Test cases for the VatRate model."""
+    
+    def test_vat_rate_creation(self, db_session):
+        """Test basic VAT rate creation."""
+        vat_rate = VatRate(
+            name='Test Rate (25%)',
+            rate=Decimal('25.00'),
+            description='Test VAT rate'
+        )
+        
+        db_session.add(vat_rate)
+        db_session.commit()
+        
+        assert vat_rate.id is not None
+        assert vat_rate.name == 'Test Rate (25%)'
+        assert vat_rate.rate == Decimal('25.00')
+        assert vat_rate.description == 'Test VAT rate'
+        assert vat_rate.is_active is True
+        assert vat_rate.created_at is not None
+    
+    def test_vat_rate_required_fields(self, db_session):
+        """Test VAT rate creation with missing required fields."""
+        # Missing name
+        vat_rate1 = VatRate(rate=Decimal('20.00'))
+        db_session.add(vat_rate1)
+        with pytest.raises(IntegrityError):
+            db_session.commit()
+        
+        db_session.rollback()
+        
+        # Missing rate
+        vat_rate2 = VatRate(name='Test Rate')
+        db_session.add(vat_rate2)
+        with pytest.raises(IntegrityError):
+            db_session.commit()
+    
+    def test_vat_rate_unique_constraints(self, db_session):
+        """Test VAT rate unique constraints."""
+        # Create first VAT rate
+        vat_rate1 = VatRate(
+            name='Standard Rate (24%)',
+            rate=Decimal('24.00')
+        )
+        db_session.add(vat_rate1)
+        db_session.commit()
+        
+        # Try to create duplicate name
+        vat_rate2 = VatRate(
+            name='Standard Rate (24%)',
+            rate=Decimal('25.00')
+        )
+        db_session.add(vat_rate2)
+        with pytest.raises(IntegrityError):
+            db_session.commit()
+        
+        db_session.rollback()
+        
+        # Try to create duplicate rate
+        vat_rate3 = VatRate(
+            name='Another Standard Rate',
+            rate=Decimal('24.00')
+        )
+        db_session.add(vat_rate3)
+        with pytest.raises(IntegrityError):
+            db_session.commit()
+    
+    def test_vat_rate_constraints(self, db_session):
+        """Test VAT rate validation constraints."""
+        # Negative rate
+        vat_rate1 = VatRate(
+            name='Negative Rate',
+            rate=Decimal('-5.00')
+        )
+        db_session.add(vat_rate1)
+        with pytest.raises(IntegrityError):
+            db_session.commit()
+        
+        db_session.rollback()
+        
+        # Rate over 100%
+        vat_rate2 = VatRate(
+            name='Over 100%',
+            rate=Decimal('150.00')
+        )
+        db_session.add(vat_rate2)
+        with pytest.raises(IntegrityError):
+            db_session.commit()
+    
+    def test_vat_rate_repr(self, db_session):
+        """Test VAT rate string representation."""
+        vat_rate = VatRate(
+            name='Standard Rate (24%)',
+            rate=Decimal('24.00')
+        )
+        db_session.add(vat_rate)
+        db_session.commit()
+        
+        expected = '<VatRate Standard Rate (24%): 24.00%>'
+        assert repr(vat_rate) == expected
+    
+    def test_get_active_rates(self, db_session):
+        """Test getting active VAT rates ordered by rate."""
+        # Create multiple VAT rates
+        rates = [
+            VatRate(name='Zero (0%)', rate=Decimal('0.00')),
+            VatRate(name='Reduced (9%)', rate=Decimal('9.00')),
+            VatRate(name='Standard (24%)', rate=Decimal('24.00')),
+            VatRate(name='High (25%)', rate=Decimal('25.00')),
+            VatRate(name='Inactive (30%)', rate=Decimal('30.00'), is_active=False)
+        ]
+        
+        for rate in rates:
+            db_session.add(rate)
+        db_session.commit()
+        
+        active_rates = VatRate.get_active_rates()
+        
+        # Should return 4 active rates
+        assert len(active_rates) == 4
+        
+        # Should be ordered by rate ascending
+        rates_values = [rate.rate for rate in active_rates]
+        assert rates_values == [Decimal('0.00'), Decimal('9.00'), Decimal('24.00'), Decimal('25.00')]
+        
+        # Should not include inactive rate
+        inactive_found = any(rate.rate == Decimal('30.00') for rate in active_rates)
+        assert not inactive_found
+    
+    def test_get_default_rate(self, db_session):
+        """Test getting Estonian default VAT rate (24%)."""
+        # Without any rates
+        default_rate = VatRate.get_default_rate()
+        assert default_rate is None
+        
+        # Create default rate
+        standard_rate = VatRate(
+            name='Standardmäär (24%)',
+            rate=Decimal('24.00')
+        )
+        db_session.add(standard_rate)
+        db_session.commit()
+        
+        default_rate = VatRate.get_default_rate()
+        assert default_rate is not None
+        assert default_rate.rate == Decimal('24.00')
+    
+    def test_create_default_rates(self, db_session):
+        """Test creating Estonian default VAT rates."""
+        # Ensure clean state
+        VatRate.query.delete()
+        db_session.commit()
+        
+        # Create default rates
+        VatRate.create_default_rates()
+        
+        # Check that all expected rates were created
+        rates = VatRate.query.order_by(VatRate.rate.asc()).all()
+        assert len(rates) == 4
+        
+        expected_rates = [Decimal('0.00'), Decimal('9.00'), Decimal('20.00'), Decimal('24.00')]
+        actual_rates = [rate.rate for rate in rates]
+        assert actual_rates == expected_rates
+        
+        # Check Estonian names
+        zero_rate = VatRate.query.filter_by(rate=0).first()
+        assert zero_rate.name == 'Maksuvaba (0%)'
+        assert 'Käibemaksuvaba' in zero_rate.description
+        
+        standard_rate = VatRate.query.filter_by(rate=24).first()
+        assert standard_rate.name == 'Standardmäär (24%)'
+        assert 'standardne käibemaksumäär' in standard_rate.description
+    
+    def test_create_default_rates_idempotent(self, db_session):
+        """Test that creating default rates multiple times is safe."""
+        initial_count = VatRate.query.count()
+        
+        # Create defaults multiple times
+        VatRate.create_default_rates()
+        VatRate.create_default_rates()
+        VatRate.create_default_rates()
+        
+        # Should still have the same number of rates
+        final_count = VatRate.query.count()
+        expected_count = initial_count + 4  # 4 default rates
+        assert final_count == expected_count
+    
+    def test_vat_rate_invoice_relationship(self, db_session, sample_client):
+        """Test relationship between VAT rates and invoices."""
+        # Create VAT rate
+        vat_rate = VatRate(
+            name='Test Rate (20%)',
+            rate=Decimal('20.00')
+        )
+        db_session.add(vat_rate)
+        db_session.flush()
+        
+        # Create invoice with VAT rate
+        invoice = Invoice(
+            number='VAT-TEST-001',
+            client_id=sample_client.id,
+            date=date.today(),
+            due_date=date.today() + timedelta(days=14),
+            vat_rate_id=vat_rate.id
+        )
+        db_session.add(invoice)
+        db_session.commit()
+        
+        # Test relationships
+        assert invoice.vat_rate_obj == vat_rate
+        assert invoice in vat_rate.invoices
+        
+        # Test effective VAT rate
+        assert invoice.get_effective_vat_rate() == Decimal('20.00')
+
+
+class TestCompanySettingsModel:
+    """Test cases for the CompanySettings model."""
+    
+    def test_company_settings_creation(self, db_session):
+        """Test basic company settings creation."""
+        settings = CompanySettings(
+            company_name='Test Company OÜ',
+            company_address='Test Address 123, Tallinn',
+            company_registry_code='12345678',
+            company_vat_number='EE123456789',
+            company_phone='+372 1234 5678',
+            company_email='info@testcompany.ee',
+            company_website='https://testcompany.ee',
+            default_vat_rate=Decimal('24.00'),
+            default_pdf_template='modern'
+        )
+        
+        db_session.add(settings)
+        db_session.commit()
+        
+        assert settings.id is not None
+        assert settings.company_name == 'Test Company OÜ'
+        assert settings.company_address == 'Test Address 123, Tallinn'
+        assert settings.company_registry_code == '12345678'
+        assert settings.company_vat_number == 'EE123456789'
+        assert settings.company_phone == '+372 1234 5678'
+        assert settings.company_email == 'info@testcompany.ee'
+        assert settings.company_website == 'https://testcompany.ee'
+        assert settings.default_vat_rate == Decimal('24.00')
+        assert settings.default_pdf_template == 'modern'
+        assert settings.created_at is not None
+        assert settings.updated_at is not None
+    
+    def test_company_settings_defaults(self, db_session):
+        """Test company settings default values."""
+        settings = CompanySettings(company_name='Minimal Company')
+        
+        db_session.add(settings)
+        db_session.commit()
+        
+        assert settings.company_address == ''
+        assert settings.company_registry_code == ''
+        assert settings.company_vat_number == ''
+        assert settings.company_phone == ''
+        assert settings.company_email == ''
+        assert settings.company_website == ''
+        assert settings.company_logo_url == ''
+        assert settings.default_vat_rate == Decimal('24.00')  # Estonian default
+        assert settings.default_pdf_template == 'standard'
+        assert settings.invoice_terms == ''
+    
+    def test_company_settings_required_name(self, db_session):
+        """Test that company name is required."""
+        settings = CompanySettings()  # No name
+        
+        db_session.add(settings)
+        with pytest.raises(IntegrityError):
+            db_session.commit()
+    
+    def test_get_settings_existing(self, db_session):
+        """Test getting existing company settings."""
+        # Create settings
+        existing_settings = CompanySettings(
+            company_name='Existing Company',
+            company_email='existing@company.ee'
+        )
+        db_session.add(existing_settings)
+        db_session.commit()
+        
+        # Get settings
+        settings = CompanySettings.get_settings()
+        
+        assert settings.id == existing_settings.id
+        assert settings.company_name == 'Existing Company'
+        assert settings.company_email == 'existing@company.ee'
+    
+    def test_get_settings_create_default(self, db_session):
+        """Test getting settings creates default if none exist."""
+        # Ensure no settings exist
+        CompanySettings.query.delete()
+        db_session.commit()
+        
+        # Get settings should create default
+        settings = CompanySettings.get_settings()
+        
+        assert settings is not None
+        assert settings.id is not None
+        assert settings.company_name == 'Minu Ettevõte'
+        
+        # Verify it was saved to database
+        db_settings = CompanySettings.query.first()
+        assert db_settings is not None
+        assert db_settings.id == settings.id
+    
+    def test_company_settings_repr(self, db_session):
+        """Test company settings string representation."""
+        settings = CompanySettings(company_name='Test Representation OÜ')
+        db_session.add(settings)
+        db_session.commit()
+        
+        expected = '<CompanySettings "Test Representation OÜ">'
+        assert repr(settings) == expected
+    
+    def test_company_settings_estonian_defaults(self, db_session):
+        """Test Estonian-specific default values."""
+        settings = CompanySettings.get_settings()
+        
+        # Should default to Estonian VAT rate
+        assert settings.default_vat_rate == Decimal('24.00')
+        
+        # Should have Estonian default company name
+        if not CompanySettings.query.filter(CompanySettings.company_name != 'Minu Ettevõte').first():
+            assert settings.company_name == 'Minu Ettevõte'
+    
+    def test_company_settings_pdf_templates(self, db_session):
+        """Test PDF template setting validation."""
+        valid_templates = ['standard', 'modern', 'elegant']
+        
+        for template in valid_templates:
+            settings = CompanySettings(
+                company_name=f'Company with {template} template',
+                default_pdf_template=template
+            )
+            db_session.add(settings)
+            db_session.commit()
+            
+            assert settings.default_pdf_template == template
+            
+            # Clean up for next iteration
+            db_session.delete(settings)
+            db_session.commit()
+    
+    def test_company_settings_vat_number_format(self, db_session):
+        """Test Estonian VAT number format."""
+        # Estonian VAT numbers start with EE
+        settings = CompanySettings(
+            company_name='Estonian Company',
+            company_vat_number='EE123456789'
+        )
+        db_session.add(settings)
+        db_session.commit()
+        
+        assert settings.company_vat_number.startswith('EE')
+        assert len(settings.company_vat_number) == 11  # EE + 9 digits
+    
+    def test_company_settings_phone_format(self, db_session):
+        """Test Estonian phone number format."""
+        estonian_phones = [
+            '+372 1234 5678',
+            '+372 5555 1234',
+            '372 6666 7890'
+        ]
+        
+        for phone in estonian_phones:
+            settings = CompanySettings(
+                company_name=f'Company with phone {phone}',
+                company_phone=phone
+            )
+            db_session.add(settings)
+            db_session.commit()
+            
+            assert '372' in settings.company_phone  # Estonian country code
+            
+            # Clean up for next iteration
+            db_session.delete(settings)
+            db_session.commit()
+    
+    def test_company_settings_updated_at(self, db_session):
+        """Test that updated_at is automatically updated."""
+        settings = CompanySettings(company_name='Update Test Company')
+        db_session.add(settings)
+        db_session.commit()
+        
+        original_updated = settings.updated_at
+        
+        # Update settings
+        settings.company_phone = '+372 9999 0000'
+        db_session.commit()
+        
+        # updated_at should be newer
+        assert settings.updated_at > original_updated

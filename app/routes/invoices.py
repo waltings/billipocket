@@ -3,8 +3,12 @@ from app.models import db, Invoice, Client, InvoiceLine, VatRate
 from app.forms import InvoiceForm, InvoiceSearchForm, InvoiceLineForm
 from app.services.numbering import generate_invoice_number
 from app.services.totals import calculate_invoice_totals, calculate_line_total
+from app.services.status_transitions import InvoiceStatusTransition
+from app.logging_config import get_logger
 from datetime import date, datetime
 from sqlalchemy import or_
+
+logger = get_logger(__name__)
 
 invoices_bp = Blueprint('invoices', __name__)
 
@@ -126,131 +130,50 @@ def new_invoice():
             pass
     
     
-    if request.method == 'POST':
-        print(f"\n--- POST REQUEST DATA ANALYSIS ---")
-        print(f"request.form keys: {list(request.form.keys())}")
-        print(f"request.form data: {dict(request.form)}")
-        
-        # Debug: Analyze form data structure
-        line_fields = {}
-        for key, value in request.form.items():
-            if key.startswith('lines-'):
-                line_fields[key] = value
-        print(f"Line fields from request.form: {line_fields}")
-        
-        # Debug: Check form validation
-        print(f"\n--- FORM VALIDATION ANALYSIS ---")
-        print(f"form.validate_on_submit(): {form.validate_on_submit()}")
-        print(f"form.errors: {form.errors}")
-        print(f"form.client_id.data: {form.client_id.data}")
-        print(f"form.date.data: {form.date.data}")
-        print(f"form.due_date.data: {form.due_date.data}")
-        print(f"form.vat_rate_id.data: {form.vat_rate_id.data}")
-        print(f"form.status.data: {form.status.data}")
-        
-        # Debug: Analyze form.lines structure
-        print(f"\n--- FORM LINES ANALYSIS ---")
-        print(f"form.lines type: {type(form.lines)}")
-        print(f"form.lines.entries length: {len(form.lines.entries)}")
-        
-        for i, line_form in enumerate(form.lines.entries):
-            print(f"\n  Line {i}:")
-            print(f"    line_form type: {type(line_form)}")
-            print(f"    hasattr(line_form, 'description'): {hasattr(line_form, 'description')}")
-            if hasattr(line_form, 'description'):
-                print(f"    line_form.description type: {type(line_form.description)}")
-                print(f"    hasattr(line_form.description, 'data'): {hasattr(line_form.description, 'data')}")
-                if hasattr(line_form.description, 'data'):
-                    print(f"    line_form.description.data: '{line_form.description.data}'")
-                    print(f"    line_form.description.data stripped: '{line_form.description.data.strip() if line_form.description.data else None}'")
-                print(f"    line_form.description.errors: {getattr(line_form.description, 'errors', 'NO_ERRORS_ATTR')}")
-            
-            print(f"    hasattr(line_form, 'qty'): {hasattr(line_form, 'qty')}")
-            if hasattr(line_form, 'qty'):
-                print(f"    line_form.qty type: {type(line_form.qty)}")
-                print(f"    hasattr(line_form.qty, 'data'): {hasattr(line_form.qty, 'data')}")
-                if hasattr(line_form.qty, 'data'):
-                    print(f"    line_form.qty.data: {line_form.qty.data}")
-                print(f"    line_form.qty.errors: {getattr(line_form.qty, 'errors', 'NO_ERRORS_ATTR')}")
-            
-            print(f"    hasattr(line_form, 'unit_price'): {hasattr(line_form, 'unit_price')}")
-            if hasattr(line_form, 'unit_price'):
-                print(f"    line_form.unit_price type: {type(line_form.unit_price)}")
-                print(f"    hasattr(line_form.unit_price, 'data'): {hasattr(line_form.unit_price, 'data')}")
-                if hasattr(line_form.unit_price, 'data'):
-                    print(f"    line_form.unit_price.data: {line_form.unit_price.data}")
-                print(f"    line_form.unit_price.errors: {getattr(line_form.unit_price, 'errors', 'NO_ERRORS_ATTR')}")
-            
-            # Check line form overall errors
-            if hasattr(line_form, 'errors'):
-                print(f"    line_form.errors: {line_form.errors}")
     
     if form.validate_on_submit():
-        print(f"\n--- FORM VALIDATION PASSED - PROCESSING LINES ---")
-        
         # Custom validation: check if form is valid and has at least one complete line
         valid_lines = []
-        for i, line_form in enumerate(form.lines.entries):
-            print(f"\n  Validating Line {i}:")
-            
+        for line_form in form.lines.entries:
             # Check description
             has_description = (hasattr(line_form, 'description') and 
                              hasattr(line_form.description, 'data') and
                              line_form.description.data and 
                              line_form.description.data.strip())
-            print(f"    has_description: {has_description}")
             
             # Check qty
             has_qty = (hasattr(line_form, 'qty') and 
                       hasattr(line_form.qty, 'data') and
                       line_form.qty.data is not None)
-            print(f"    has_qty: {has_qty}")
             
             # Check unit_price
             has_unit_price = (hasattr(line_form, 'unit_price') and 
                              hasattr(line_form.unit_price, 'data') and
                              line_form.unit_price.data is not None)
-            print(f"    has_unit_price: {has_unit_price}")
             
             if has_description and has_qty and has_unit_price:
-                print(f"    Line {i} IS VALID - adding to valid_lines")
                 valid_lines.append(line_form)
-            else:
-                print(f"    Line {i} IS INVALID - skipping")
-        
-        print(f"\n--- VALID LINES SUMMARY ---")
-        print(f"Number of valid_lines: {len(valid_lines)}")
         
         if len(valid_lines) == 0:
-            print("NO VALID LINES FOUND - trying alternate data access method")
-            # The issue is that FormField objects are corrupted during template rendering
-            # Let's try accessing data via the .data attribute instead
-            for i, line_form in enumerate(form.lines.entries):
-                print(f"  Trying alternate access for line {i}:")
+            # Try accessing data via the .data attribute instead
+            for line_form in form.lines.entries:
                 try:
                     data = line_form.data
-                    print(f"    line_form.data: {data}")
                     desc = data.get('description', '').strip() if data else ''
                     qty = data.get('qty') if data else None
                     price = data.get('unit_price') if data else None
-                    print(f"    desc: '{desc}', qty: {qty}, price: {price}")
                     
                     if desc and qty is not None and price is not None:
-                        print(f"    Line {i} HAS VALID DATA via .data!")
                         valid_lines.append(line_form)
                 except Exception as e:
-                    print(f"    Error accessing line_form.data: {e}")
-            
-            print(f"After alternate method - valid_lines: {len(valid_lines)}")
+                    logger.error(f"Error accessing line_form data: {e}")
             
             if len(valid_lines) == 0:
                 flash('Palun lisa vähemalt üks arve rida.', 'warning')
         
         if len(valid_lines) > 0:
-            print("VALID LINES FOUND - proceeding with invoice creation")
             # Use form invoice number (user can modify it)
             invoice_number = form.number.data or generate_invoice_number()
-            print(f"Using invoice number: {invoice_number}")
         
             # Create invoice
             # Get the selected VAT rate
@@ -265,15 +188,13 @@ def new_invoice():
                 vat_rate=selected_vat_rate.rate if selected_vat_rate else 24,  # Fallback
                 status=form.status.data
             )
-            print(f"Created invoice object: {invoice}")
             
             try:
                 db.session.add(invoice)
                 db.session.flush()  # Get invoice ID
-                print(f"Invoice added to DB, ID: {invoice.id}")
                 
                 # Add invoice lines (use valid_lines instead of form.lines)
-                for i, line_form in enumerate(valid_lines):
+                for line_form in valid_lines:
                     # Use .data attribute to access the form data since FormField objects are corrupted
                     line_data = line_form.data
                     line_total = calculate_line_total(line_data['qty'], line_data['unit_price'])
@@ -285,44 +206,28 @@ def new_invoice():
                         line_total=line_total
                     )
                     db.session.add(line)
-                    print(f"Added line {i}: {line.description}, qty={line.qty}, price={line.unit_price}, total={line.line_total}")
                 
                 db.session.flush()  # Ensure lines are saved
-                print("Lines flushed to DB")
                 
                 # Calculate totals
                 calculate_invoice_totals(invoice)
-                print(f"Totals calculated - subtotal: {invoice.subtotal}, vat: {invoice.vat_amount}, total: {invoice.total}")
                 
                 db.session.commit()
-                print("Transaction committed successfully")
                 
                 flash(f'Arve "{invoice.number}" on edukalt loodud.', 'success')
-                print(f"SUCCESS - redirecting to view_invoice")
+                logger.info(f"Invoice {invoice.number} created successfully with {len(valid_lines)} lines")
                 return redirect(url_for('invoices.view_invoice', invoice_id=invoice.id))
             except Exception as e:
-                print(f"EXCEPTION during invoice creation: {str(e)}")
-                print(f"Exception type: {type(e)}")
-                import traceback
-                print(f"Traceback: {traceback.format_exc()}")
+                logger.error(f"Error creating invoice: {str(e)}")
                 db.session.rollback()
                 flash('Arve loomisel tekkis viga. Palun proovi uuesti.', 'danger')
     else:
         if request.method == 'POST':
-            print("\n--- FORM VALIDATION FAILED ---")
-            print("Form did not validate - returning to template")
+            logger.debug("Form validation failed")
     
     # Ensure at least one line form
     if not form.lines.entries:
-        print("No line entries found - adding empty line")
         form.lines.append_entry()
-    else:
-        print(f"Found {len(form.lines.entries)} existing line entries")
-    
-    print("=== RETURNING TO TEMPLATE ===")
-    print(f"form.client_id.choices: {form.client_id.choices}")
-    print(f"Clients being passed to template: {[(c.id, c.name) for c in clients]}")
-    print()
     return render_template('invoice_form.html', form=form, title='Uus arve', clients=clients, vat_rates=vat_rates)
 
 
@@ -441,6 +346,7 @@ def edit_invoice(invoice_id):
             flash(f'Arve "{invoice.number}" on edukalt uuendatud.', 'success')
             return redirect(url_for('invoices.view_invoice', invoice_id=invoice.id))
         except Exception as e:
+            logger.error(f"Error updating invoice {invoice_id}: {str(e)}")
             db.session.rollback()
             flash('Arve uuendamisel tekkis viga. Palun proovi uuesti.', 'danger')
     
@@ -464,6 +370,7 @@ def delete_invoice(invoice_id):
         flash(f'Arve "{invoice_number}" on edukalt kustutatud.', 'success')
         return redirect(url_for('invoices.invoices'))
     except Exception as e:
+        logger.error(f"Error deleting invoice {invoice_id}: {str(e)}")
         db.session.rollback()
         flash('Arve kustutamisel tekkis viga. Palun proovi uuesti.', 'danger')
         return redirect(url_for('invoices.view_invoice', invoice_id=invoice_id))
@@ -471,30 +378,21 @@ def delete_invoice(invoice_id):
 
 @invoices_bp.route('/invoices/<int:invoice_id>/status/<new_status>', methods=['POST'])
 def change_status(invoice_id, new_status):
-    """Change invoice status."""
+    """Change invoice status using the status transition service."""
     invoice = Invoice.query.get_or_404(invoice_id)
     
-    # Use the new validation logic
-    can_change, error_message = invoice.can_change_status_to(new_status)
-    if not can_change:
-        flash(error_message, 'warning')
-        return redirect(url_for('invoices.view_invoice', invoice_id=invoice_id))
-    
-    # Status transition validation
-    status_messages = {
-        'mustand': 'Arve on muudetud mustandiks.',
-        'saadetud': 'Arve on märgitud saadetud.',
-        'makstud': 'Arve on märgitud makstud.',
-        'tähtaeg ületatud': 'Arve on märgitud tähtaja ületanud.'
-    }
-    
     try:
-        invoice.set_status(new_status)
-        db.session.commit()
-        flash(status_messages[new_status], 'success')
-    except ValueError as ve:
-        flash(str(ve), 'warning')
+        # Use the status transition service
+        success, message = InvoiceStatusTransition.transition_invoice_status(invoice, new_status)
+        
+        if success:
+            db.session.commit()
+            flash(message, 'success')
+        else:
+            flash(message, 'warning')
+            
     except Exception as e:
+        logger.error(f"Error changing status for invoice {invoice_id} to {new_status}: {str(e)}")
         db.session.rollback()
         flash('Staatuse muutmisel tekkis viga. Palun proovi uuesti.', 'danger')
     
@@ -544,6 +442,7 @@ def duplicate_invoice(invoice_id):
         flash(f'Arve on edukalt dubleeritud uue numbriga "{new_number}".', 'success')
         return redirect(url_for('invoices.view_invoice', invoice_id=duplicate.id))
     except Exception as e:
+        logger.error(f"Error duplicating invoice {invoice_id}: {str(e)}")
         db.session.rollback()
         flash('Arve dubleerimisel tekkis viga. Palun proovi uuesti.', 'danger')
         return redirect(url_for('invoices.view_invoice', invoice_id=invoice_id))
@@ -569,6 +468,7 @@ def email_invoice(invoice_id):
         flash(f'Arve "{invoice.number}" on edukalt saadetud e-mailile {invoice.client.email}.', 'success')
         return redirect(url_for('invoices.view_invoice', invoice_id=invoice_id))
     except Exception as e:
+        logger.error(f"Error sending invoice {invoice_id} via email: {str(e)}")
         db.session.rollback()
         flash('Arve saatmisel tekkis viga. Palun proovi uuesti.', 'danger')
         return redirect(url_for('invoices.view_invoice', invoice_id=invoice_id))

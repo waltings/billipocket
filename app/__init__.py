@@ -1,7 +1,8 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, render_template
 import os
 import click
 from datetime import date, timedelta
+from app.logging_config import setup_logging
 
 
 def create_app(config_name=None):
@@ -26,6 +27,36 @@ def create_app(config_name=None):
     
     db.init_app(app)
     csrf = CSRFProtect(app)
+    
+    # Setup logging
+    setup_logging(app)
+    
+    # Security headers
+    @app.after_request
+    def set_security_headers(response):
+        if not app.config.get('DEBUG'):
+            response.headers['X-Content-Type-Options'] = 'nosniff'
+            response.headers['X-Frame-Options'] = 'DENY'
+            response.headers['X-XSS-Protection'] = '1; mode=block'
+        return response
+    
+    # Error handlers
+    @app.errorhandler(404)
+    def not_found_error(error):
+        return render_template('404.html'), 404
+    
+    @app.errorhandler(500)
+    def internal_error(error):
+        db.session.rollback()
+        return render_template('500.html'), 500
+    
+    @app.errorhandler(400)
+    def csrf_error(error):
+        from flask_wtf.csrf import CSRFError
+        if isinstance(error, CSRFError):
+            return render_template('400.html', 
+                                 error_message='CSRF token on puudu või vigane. Palun proovi uuesti.'), 400
+        return render_template('400.html'), 400
     
     # Global context processor for navigation
     @app.context_processor

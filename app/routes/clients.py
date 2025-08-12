@@ -1,7 +1,10 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from app.models import db, Client, Invoice
 from app.forms import ClientForm, ClientSearchForm
+from app.logging_config import get_logger
 from sqlalchemy import or_
+
+logger = get_logger(__name__)
 
 clients_bp = Blueprint('clients', __name__)
 

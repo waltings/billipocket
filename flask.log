@@ -1,21 +1,14 @@
+[2025-08-11 21:48:19,111] INFO in logging_config: BilliPocket application started - Debug: True
  * Serving Flask app 'app'
  * Debug mode: on
 [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
  * Running on http://127.0.0.1:5010
 [33mPress CTRL+C to quit[0m
  * Restarting with stat
+[2025-08-11 21:48:20,326] INFO in logging_config: BilliPocket application started - Debug: True
  * Debugger is active!
  * Debugger PIN: 197-879-355
-127.0.0.1 - - [11/Aug/2025 17:44:13] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
-Traceback (most recent call last):
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
-    self.dialect.do_execute(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/default.py", line 922, in do_execute
-    cursor.execute(statement, parameters)
-sqlite3.OperationalError: no such table: clients
-
-The above exception was the direct cause of the following exception:
-
+127.0.0.1 - - [11/Aug/2025 21:48:24] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
 Traceback (most recent call last):
   File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
     return self.wsgi_app(environ, start_response)
@@ -29,51 +22,44 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 18, in invoices
-    clients = Client.query.order_by(Client.name.asc()).all()
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/query.py", line 2693, in all
-    return self._iter().all()  # type: ignore
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/query.py", line 2847, in _iter
-    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/session.py", line 2308, in execute
-    return self._execute_internal(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/session.py", line 2190, in _execute_internal
-    result: Result[Any] = compile_state_cls.orm_execute_statement(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/context.py", line 293, in orm_execute_statement
-    result = conn.execute(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1416, in execute
-    return meth(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/sql/elements.py", line 516, in _execute_on_connection
-    return connection._execute_clauseelement(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1639, in _execute_clauseelement
-    ret = self._execute_context(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
-    return self._exec_single_context(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
-    self._handle_dbapi_exception(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 2343, in _handle_dbapi_exception
-    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
-    self.dialect.do_execute(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/default.py", line 922, in do_execute
-    cursor.execute(statement, parameters)
-sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: clients
-[SQL: SELECT clients.id AS clients_id, clients.name AS clients_name, clients.registry_code AS clients_registry_code, clients.email AS clients_email, clients.phone AS clients_phone, clients.address AS clients_address, clients.created_at AS clients_created_at 
-FROM clients ORDER BY clients.name ASC]
-(Background on this error at: https://sqlalche.me/e/20/e3q8)
-127.0.0.1 - - [11/Aug/2025 17:44:13] "GET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 17:44:13] "GET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
-127.0.0.1 - - [11/Aug/2025 17:44:13] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 17:50:49] "[35m[1mGET / HTTP/1.1[0m" 500 -
-Traceback (most recent call last):
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
-    self.dialect.do_execute(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/default.py", line 922, in do_execute
-    cursor.execute(statement, parameters)
-sqlite3.OperationalError: no such table: invoices
-
-The above exception was the direct cause of the following exception:
-
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 181, in block 'content'
+    <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" target="_blank">Standard PDF</a></li>
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'pdf.invoice_pdf' with values ['invoice_id', 'template']. Did you forget to specify values ['id']?
+127.0.0.1 - - [11/Aug/2025 21:48:24] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:24] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:24] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:27] "GET /reports HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:48:27] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:27] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:30] "GET /clients HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:48:30] "[36mGET /clients?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:30] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:30] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:31] "GET /clients HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:48:31] "[36mGET /clients?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:31] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:31] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:42] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
 Traceback (most recent call last):
   File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
     return self.wsgi_app(environ, start_response)
@@ -87,42 +73,719 @@ Traceback (most recent call last):
     rv = self.dispatch_request()
   File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
     return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
-  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/dashboard.py", line 17, in overview
-    updated_count = Invoice.update_overdue_invoices()
-  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/models.py", line 206, in update_overdue_invoices
-    overdue_invoices = cls.query.filter(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/query.py", line 2693, in all
-    return self._iter().all()  # type: ignore
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/query.py", line 2847, in _iter
-    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/session.py", line 2308, in execute
-    return self._execute_internal(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/session.py", line 2190, in _execute_internal
-    result: Result[Any] = compile_state_cls.orm_execute_statement(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/orm/context.py", line 293, in orm_execute_statement
-    result = conn.execute(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1416, in execute
-    return meth(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/sql/elements.py", line 516, in _execute_on_connection
-    return connection._execute_clauseelement(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1639, in _execute_clauseelement
-    ret = self._execute_context(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
-    return self._exec_single_context(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
-    self._handle_dbapi_exception(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 2343, in _handle_dbapi_exception
-    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
-    self.dialect.do_execute(
-  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/sqlalchemy/engine/default.py", line 922, in do_execute
-    cursor.execute(statement, parameters)
-sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: invoices
-[SQL: SELECT invoices.id AS invoices_id, invoices.number AS invoices_number, invoices.client_id AS invoices_client_id, invoices.date AS invoices_date, invoices.due_date AS invoices_due_date, invoices.subtotal AS invoices_subtotal, invoices.vat_rate_id AS invoices_vat_rate_id, invoices.vat_rate AS invoices_vat_rate, invoices.total AS invoices_total, invoices.status AS invoices_status, invoices.created_at AS invoices_created_at, invoices.updated_at AS invoices_updated_at 
-FROM invoices 
-WHERE invoices.due_date < ? AND invoices.status = ?]
-[parameters: ('2025-08-11', 'saadetud')]
-(Background on this error at: https://sqlalche.me/e/20/e3q8)
-127.0.0.1 - - [11/Aug/2025 17:50:49] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 17:50:49] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
-127.0.0.1 - - [11/Aug/2025 17:50:49] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 181, in block 'content'
+    <li><a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" target="_blank">Standard PDF</a></li>
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'pdf.invoice_pdf' with values ['invoice_id', 'template']. Did you forget to specify values ['id']?
+127.0.0.1 - - [11/Aug/2025 21:48:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:48:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:27] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 161, in block 'content'
+    <a href="{{ url_for('invoices.view_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.view_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:50:27] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:27] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:27] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:28] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 161, in block 'content'
+    <a href="{{ url_for('invoices.view_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.view_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:50:28] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:28] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:28] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:34] "GET /clients HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:50:34] "GET /static/js/billipocket.js HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:50:34] "GET /static/css/billipocket.css HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:50:34] "GET /static/js/billipocket.js HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:50:36] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 161, in block 'content'
+    <a href="{{ url_for('invoices.view_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.view_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:50:36] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:36] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:36] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:36] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:36] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:36] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:39] "GET /reports HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:50:39] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:39] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:40] "GET /clients HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:50:40] "[36mGET /clients?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:40] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:40] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:42] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 161, in block 'content'
+    <a href="{{ url_for('invoices.view_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.view_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:50:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:42] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:51] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:50:51] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:51] "GET /static/css/billipocket.css HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:50:51] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [11/Aug/2025 21:50:54] "GET /clients HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:50:54] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:54] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:54] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [11/Aug/2025 21:50:55] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 161, in block 'content'
+    <a href="{{ url_for('invoices.view_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.view_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:50:55] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:55] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:56] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [11/Aug/2025 21:50:56] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:50:56] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 161, in block 'content'
+    <a href="{{ url_for('invoices.view_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.view_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:19] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:51:20] "GET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:53:28] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 168, in block 'content'
+    <a href="{{ url_for('invoices.edit_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.edit_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:53:28] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:28] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:28] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [11/Aug/2025 21:53:28] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:28] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:29] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 168, in block 'content'
+    <a href="{{ url_for('invoices.edit_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.edit_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:53:29] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:29] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:29] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [11/Aug/2025 21:53:29] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:29] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:41] "GET /clients HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:53:41] "[36mGET /clients?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:41] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:41] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:43] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 168, in block 'content'
+    <a href="{{ url_for('invoices.edit_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.edit_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:53:43] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:43] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:43] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:43] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:43] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:53:43] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:09] "[35m[1mGET /invoices HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 90, in invoices
+    return render_template('invoices.html',
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoices.html", line 168, in block 'content'
+    <a href="{{ url_for('invoices.edit_invoice', id=invoice.id) }}"
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'invoices.edit_invoice' with values ['id']. Did you forget to specify values ['invoice_id']?
+127.0.0.1 - - [11/Aug/2025 21:54:09] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:09] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:09] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:09] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:09] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:09] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:11] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:54:11] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:11] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:11] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:11] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:11] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:22] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:54:22] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:22] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:22] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:22] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:54:22] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:32] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:57:32] "[36mGET /?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:32] "[36mGET /?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:32] "[36mGET /?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:32] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:32] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:34] "GET /invoices HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:57:34] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:34] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:34] "[36mGET /invoices?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:34] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:34] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:57:40] "[35m[1mGET /invoices/1 HTTP/1.1[0m" 500 -
+Traceback (most recent call last):
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1498, in __call__
+    return self.wsgi_app(environ, start_response)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1476, in wsgi_app
+    response = self.handle_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1473, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 882, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 880, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 865, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/app/routes/invoices.py", line 238, in view_invoice
+    return render_template('invoice_detail.html', invoice=invoice)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 1301, in render
+    self.environment.handle_exception()
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/jinja2/environment.py", line 936, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoice_detail.html", line 1, in top-level template code
+    {% extends 'layout.html' %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/layout.html", line 81, in top-level template code
+    {% block content %}{% endblock %}
+  File "/Users/keijovalting/Downloads/billipocket_gpt5/templates/invoice_detail.html", line 51, in block 'content'
+    <a class="dropdown-item" href="{{ url_for('pdf.invoice_pdf', invoice_id=invoice.id, template='standard') }}" target="_blank">
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1084, in url_for
+    return self.handle_url_build_error(error, endpoint, values)
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 1073, in url_for
+    rv = url_adapter.build(  # type: ignore[union-attr]
+  File "/Users/keijovalting/Library/Python/3.9/lib/python/site-packages/werkzeug/routing/map.py", line 919, in build
+    raise BuildError(endpoint, values, method, self)
+werkzeug.routing.exceptions.BuildError: Could not build url for endpoint 'pdf.invoice_pdf' with values ['invoice_id', 'template']. Did you forget to specify values ['id']?
+127.0.0.1 - - [11/Aug/2025 21:57:40] "GET /invoices/1?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:57:40] "GET /invoices/1?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:57:40] "GET /invoices/1?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 21:57:41] "[36mGET /invoices/1?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 21:58:04] "GET /invoice/1/pdf/standard HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 22:00:25] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Aug/2025 22:00:25] "[36mGET /static/css/billipocket.css HTTP/1.1[0m" 304 -
+127.0.0.1 - - [11/Aug/2025 22:00:25] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+127.0.0.1 - - [11/Aug/2025 22:00:25] "[36mGET /static/js/billipocket.js HTTP/1.1[0m" 304 -

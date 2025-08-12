@@ -34,19 +34,22 @@ body {
 .bp-app {
   display: grid;
   grid-template-columns: 280px 1fr;
-  grid-template-rows: auto 1fr;
+  grid-template-rows: 1fr;
   min-height: 100vh;
 }
 
 @media (max-width: 991.98px) {
   .bp-app {
-    grid-template-columns: 1fr;
+    grid-template-columns: 280px 1fr;
+  }
+  .bp-sidebar {
+    position: relative;
   }
 }
 
 /* Sidebar */
 .bp-sidebar {
-  grid-row: 1 / span 2;
+  grid-row: 1;
   grid-column: 1;
   background: var(--bp-sidebar);
   color: var(--bp-sidebar-contrast);

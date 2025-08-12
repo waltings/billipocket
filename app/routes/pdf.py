@@ -3,15 +3,18 @@ from datetime import date
 from io import BytesIO
 from weasyprint import HTML, CSS
 from app.models import Invoice, CompanySettings
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 pdf_bp = Blueprint('pdf', __name__)
 
 
-@pdf_bp.route('/invoice/<int:invoice_id>/pdf')
-@pdf_bp.route('/invoice/<int:invoice_id>/pdf/<template>')
-def invoice_pdf(invoice_id, template=None):
+@pdf_bp.route('/invoice/<int:id>/pdf')
+@pdf_bp.route('/invoice/<int:id>/pdf/<template>')
+def invoice_pdf(id, template=None):
     """Generate PDF for invoice with specified template."""
-    invoice = Invoice.query.get_or_404(invoice_id)
+    invoice = Invoice.query.get_or_404(id)
     
     # Get company settings for default template
     company_settings = CompanySettings.get_settings()
@@ -60,16 +63,15 @@ def invoice_pdf(invoice_id, template=None):
         )
         
     except Exception as e:
-        # Log error in production
-        print(f"PDF generation error: {e}")
+        logger.error(f"PDF generation error for invoice {id}: {str(e)}", exc_info=True)
         abort(500)
 
 
-@pdf_bp.route('/invoice/<int:invoice_id>/preview')
-@pdf_bp.route('/invoice/<int:invoice_id>/preview/<template>')
-def invoice_preview(invoice_id, template=None):
+@pdf_bp.route('/invoice/<int:id>/preview')
+@pdf_bp.route('/invoice/<int:id>/preview/<template>')
+def invoice_preview(id, template=None):
     """Preview invoice HTML before PDF generation."""
-    invoice = Invoice.query.get_or_404(invoice_id)
+    invoice = Invoice.query.get_or_404(id)
     
     # Get company settings for default template
     company_settings = CompanySettings.get_settings()
@@ -95,17 +97,16 @@ def invoice_preview(invoice_id, template=None):
             today=date.today()
         )
     except Exception as e:
-        # Log error in production
-        print(f"Preview generation error: {e}")
+        logger.error(f"Preview generation error for invoice {id}: {str(e)}", exc_info=True)
         abort(500)
 
 
-@pdf_bp.route('/invoice/<int:invoice_id>/pdf/all')
-def invoice_pdf_all_templates(invoice_id):
+@pdf_bp.route('/invoice/<int:id>/pdf/all')
+def invoice_pdf_all_templates(id):
     """Generate PDFs in all templates and return as zip file (future enhancement)."""
     # This could be implemented to generate all three templates
     # and return them as a zip file for comparison
-    invoice = Invoice.query.get_or_404(invoice_id)
+    invoice = Invoice.query.get_or_404(id)
     
     # For now, redirect to standard template
-    return invoice_pdf(invoice_id, 'standard')
+    return invoice_pdf(id, 'standard')

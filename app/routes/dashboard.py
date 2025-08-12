@@ -1,8 +1,11 @@
 from flask import Blueprint, render_template, flash, redirect, url_for, request
 from app.models import db, Invoice, Client, VatRate
+from app.logging_config import get_logger
 from sqlalchemy import func, case
 from datetime import date, datetime, timedelta
 from decimal import Decimal
+
+logger = get_logger(__name__)
 
 dashboard_bp = Blueprint('dashboard', __name__)
 

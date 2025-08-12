@@ -19,6 +19,15 @@ class ProductionConfig(Config):
     """Production configuration."""
     DEBUG = False
     DEVELOPMENT = False
+    
+    # Security settings for production
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Lax'
+    REMEMBER_COOKIE_SECURE = True
+    REMEMBER_COOKIE_HTTPONLY = True
+    WTF_CSRF_TIME_LIMIT = 3600
+    PERMANENT_SESSION_LIFETIME = 3600
 
 
 # Configuration mapping
